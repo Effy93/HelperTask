@@ -1,0 +1,50 @@
+:root {
+  /* ========================= */
+  /* Couleurs principales      */
+  /* ========================= */
+
+  --color-primary: #8b5d33; /* marron principal */
+  --color-primary-hover: #734b29;
+
+  --color-accent: #fba875; /* orange accent */
+  --color-accent-soft: #ffd8bd;
+
+  --color-success: #368d28; /* bouton valider */
+  --color-success-hover: #2c7421;
+
+  /* ========================= */
+  /* Glass / transparence      */
+  /* ========================= */
+
+  --glass-bg: rgba(255, 255, 255, 0.18);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-shadow: rgba(0, 0, 0, 0.15);
+
+  /* ========================= */
+  /* Surfaces                  */
+  /* ========================= */
+
+  --color-surface: rgba(255, 255, 255, 0.85); /* cartes */
+  --color-surface-alt: rgba(255, 255, 255, 0.65);
+
+  /* ========================= */
+  /* Texte                     */
+  /* ========================= */
+
+  --color-text-main: #2e2e2e;
+  --color-text-light: #ffffff;
+  --color-text-muted: #6f6f6f;
+
+  /* ========================= */
+  /* Bordures                  */
+  /* ========================= */
+
+  --color-border: rgba(0, 0, 0, 0.08);
+
+  /* ========================= */
+  /* Etats UI                  */
+  /* ========================= */
+
+  --color-danger: #c0392b;
+  --color-warning: #f39c12;
+}
