@@ -1,8 +1,11 @@
 // Load the express module to create a web application
 
+import cookieParser from "cookie-parser";
 import express from "express";
 
 const app = express();
+
+app.use(cookieParser());
 
 // Configure it
 
@@ -20,8 +23,18 @@ const app = express();
 
 import cors from "cors";
 
-if (process.env.CLIENT_URL != null) {
-  app.use(cors({ origin: [process.env.CLIENT_URL] }));
+// if (process.env.CLIENT_URL != null) {
+//   app.use(cors({ origin: [process.env.CLIENT_URL] }));
+
+// }
+
+if (process.env.CLIENT_URL) {
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+      credentials: true, // nécessaire pour fetch avec cookie
+    }),
+  );
 }
 
 // If you need to allow extra origins, you can add something like this:
@@ -52,7 +65,7 @@ app.use(
 
 // Uncomment one or more of these options depending on the format of the data sent by your client:
 
-// app.use(express.json());
+app.use(express.json());
 // app.use(express.urlencoded());
 // app.use(express.text());
 // app.use(express.raw());
@@ -63,9 +76,14 @@ app.use(
 import router from "./router";
 
 // Mount the API router under the "/api" endpoint
-app.use(router);
 
+/* ************EVA************************************************************* */
 /* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+/* ************************************************************************* */
+// ????????
+app.use(router);
 
 // Production-ready setup: What is it for?
 
@@ -105,6 +123,7 @@ if (fs.existsSync(clientBuildPath)) {
 // Middleware for Error Logging
 // Important: Error-handling middleware should be defined last, after other app.use() and routes calls.
 
+import { configDotenv } from "dotenv";
 import type { ErrorRequestHandler } from "express";
 
 // Define a middleware function to log errors
