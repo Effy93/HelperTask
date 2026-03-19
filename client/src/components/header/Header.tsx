@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./header.css";
-import { Link } from "react-router-dom";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const { user, setUser } = useAuth();
+  const navigate = useNavigate();
+
   const logoText = "Task Helper";
 
   const [logoChars] = useState(() =>
@@ -19,6 +23,16 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleLogout = async () => {
+    await fetch("http://localhost:3310/api/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    setUser(null);
+    navigate("/");
+  };
+
   return (
     <header className={`header ${scrolled ? "header--small" : ""}`}>
       <h1 className="logo">
@@ -33,16 +47,32 @@ export default function Header() {
 
       <nav>
         <ul>
-          <li>
-            <Link to="/login" className="nav-link">
-              Connexion
-            </Link>
-          </li>
-          <li>
-            <Link to="/profile" className="nav-link">
-              Espace perso
-            </Link>
-          </li>
+          {!user && (
+            <li>
+              <Link to="/login" className="nav-link">
+                Connexion
+              </Link>
+            </li>
+          )}
+
+          {user && (
+            <>
+              <li>
+                <Link to="/profile" className="nav-link">
+                  Espace perso
+                </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="nav-link"
+                >
+                  Logout
+                </button>
+              </li>
+            </>
+          )}
         </ul>
       </nav>
     </header>

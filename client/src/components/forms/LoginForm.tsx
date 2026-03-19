@@ -1,13 +1,12 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./form.css";
-import type { IUser } from "../../../../server/src/types/IUser";
 
-interface FormProps {
-  setUser?: (user: IUser | null) => void;
-}
+export default function LoginForm() {
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
 
-export default function LoginForm({ setUser }: FormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -24,25 +23,23 @@ export default function LoginForm({ setUser }: FormProps) {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
-        setMessage(data.message || "Erreur de connexion");
-        setUser?.(null);
-      } else {
-        setMessage("Connexion réussie !");
-
-        const meRes = await fetch("http://localhost:3310/api/me", {
-          credentials: "include",
-        });
-
-        const meData = await meRes.json();
-        setUser?.(meData);
+        setMessage("Erreur de connexion");
+        return;
       }
-    } catch (error) {
-      console.error(error);
+
+      // 🔥 récupérer le user
+      const meRes = await fetch("http://localhost:3310/api/me", {
+        credentials: "include",
+      });
+
+      const userData = await meRes.json();
+
+      setUser(userData.user); // ✅ FIX ICI
+
+      navigate("/profile");
+    } catch {
       setMessage("Erreur réseau");
-      setUser?.(null);
     }
   };
 
@@ -74,8 +71,9 @@ export default function LoginForm({ setUser }: FormProps) {
         </div>
 
         <button type="submit">Se connecter</button>
+
         <p style={{ marginTop: "1rem" }}>
-          Vous n’avez pas de compte ? <Link to="/register">Inscrivez-vous</Link>
+          Pas de compte ? <Link to="/register">S’inscrire</Link>
         </p>
       </form>
 

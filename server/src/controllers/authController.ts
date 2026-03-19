@@ -71,6 +71,21 @@ const me = (req: AuthRequest, res: Response): void => {
   });
 };
 
-const authController = { login, me };
+const logout = (req: Request, res: Response, next: NextFunction): void => {
+  try {
+    res.clearCookie("access_token", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false, // true en production HTTPS
+    });
+
+    res.status(200).json({ message: "Déconnexion réussie" });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+const authController = { login, me, logout };
 
 export default authController;
