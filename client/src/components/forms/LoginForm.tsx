@@ -1,10 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import "./form.css";
 import type { IUser } from "../../../../server/src/types/IUser";
-import "./form.css";
 
 interface FormProps {
-  setUser: (user: IUser | null) => void;
+  setUser?: (user: IUser | null) => void;
 }
 
 export default function LoginForm({ setUser }: FormProps) {
@@ -28,21 +28,21 @@ export default function LoginForm({ setUser }: FormProps) {
 
       if (!res.ok) {
         setMessage(data.message || "Erreur de connexion");
-        setUser(null);
+        setUser?.(null);
       } else {
         setMessage("Connexion réussie !");
 
-        // Récupérer les infos de l'utilisateur
         const meRes = await fetch("http://localhost:3310/api/me", {
           credentials: "include",
         });
+
         const meData = await meRes.json();
-        setUser(meData);
+        setUser?.(meData);
       }
     } catch (error) {
       console.error(error);
       setMessage("Erreur réseau");
-      setUser(null);
+      setUser?.(null);
     }
   };
 
@@ -51,8 +51,8 @@ export default function LoginForm({ setUser }: FormProps) {
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <input
-            type="email"
             id="email"
+            type="email"
             required
             placeholder=" "
             value={email}
@@ -63,8 +63,8 @@ export default function LoginForm({ setUser }: FormProps) {
 
         <div className="input-group">
           <input
-            type="password"
             id="password"
+            type="password"
             required
             placeholder=" "
             value={password}
@@ -74,6 +74,9 @@ export default function LoginForm({ setUser }: FormProps) {
         </div>
 
         <button type="submit">Se connecter</button>
+        <p style={{ marginTop: "1rem" }}>
+          Vous n’avez pas de compte ? <Link to="/register">Inscrivez-vous</Link>
+        </p>
       </form>
 
       {message && <p>{message}</p>}

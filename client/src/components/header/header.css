@@ -1,0 +1,92 @@
+/* HEADER */
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+  background: rgba(243, 237, 247, 0.283);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.5rem 2rem;
+}
+
+/* LOGO */
+.logo span {
+  display: inline-block;
+  transition: transform 0.4s ease-out, letter-spacing 0.6s ease-out;
+}
+
+.logo-link:hover span,
+.logo-link:focus span {
+  transform: scale(1.4) translateY(-4px);
+  letter-spacing: 4px;
+}
+
+.logo-link {
+  display: inline-block;
+  color: inherit;
+  outline: none;
+}
+
+/* NAV */
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+/* lien */
+nav ul li a.nav-link {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  color: var(--color-main);
+  font-weight: 500;
+  padding: 6px 0;
+  transition: transform 0.3s ease, color 0.3s ease;
+  outline: none;
+}
+
+/* coins */
+nav ul li a.nav-link::before,
+nav ul li a.nav-link::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: transform 0.7s ease, opacity 0.4s ease;
+}
+
+/* positions */
+nav ul li a.nav-link::before {
+  top: -4px;
+  left: -4px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+
+nav ul li a.nav-link::after {
+  bottom: -4px;
+  right: -4px;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+}
+
+/* hover */
+nav ul li a.nav-link:hover::before,
+nav ul li a.nav-link:hover::after {
+  opacity: 1;
+  transform: scale(1) rotate(20deg);
+}
+
+nav ul li a.nav-link:hover {
+  color: var(--color-link);
+  transform: translateY(-4px) scale(1.1);
+}

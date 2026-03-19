@@ -1,5 +1,6 @@
-CREATE database if NOT exists task_helper;
-use task_helper;
+CREATE DATABASE IF NOT EXISTS task_helper;
+USE task_helper;
+
 -- =======================================
 -- TABLE USER
 -- =======================================
@@ -17,7 +18,8 @@ CREATE TABLE project (
     id_project INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(55) NOT NULL,
     description VARCHAR(255),
-    status ENUM('todo','doing','done') NOT NULL DEFAULT 'todo'
+    status ENUM('todo','doing','done') NOT NULL DEFAULT 'todo',
+    position INT NOT NULL DEFAULT 0
 );
 
 -- =======================================
@@ -28,7 +30,8 @@ CREATE TABLE task (
     title VARCHAR(55) NOT NULL,
     content VARCHAR(255),
     status ENUM('todo','doing','done') NOT NULL DEFAULT 'todo',
-    deadline BIGINT,
+    position INT NOT NULL DEFAULT 0,
+    deadline DATETIME,
     project_id INT NOT NULL,
     FOREIGN KEY (project_id) REFERENCES project(id_project) ON DELETE CASCADE
 );
@@ -46,7 +49,7 @@ CREATE TABLE project_user (
 );
 
 -- =======================================
--- TABLE USER_TASK (relation N-M, optionnelle)
+-- TABLE USER_TASK (relation N-M)
 -- =======================================
 CREATE TABLE user_task (
     task_id INT NOT NULL,

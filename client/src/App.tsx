@@ -1,27 +1,20 @@
 import { useState } from "react";
+import { Outlet } from "react-router-dom";
 import type { IUser } from "../../server/src/types/IUser";
-import LoginForm from "../src/components/forms/LoginForm";
-import RegisterForm from "../src/components/forms/RegisterForm";
+import Header from "./components/header/Header";
 
-export default function App() {
+function App() {
   const [user, setUser] = useState<IUser | null>(null);
 
   return (
-    <div>
-      {!user ? (
-        <>
-          <h1>Se connecter</h1>
-          <LoginForm setUser={setUser} />
+    <>
+      <Header />
 
-          <h1>S'inscrire</h1>
-          <RegisterForm setUser={setUser} />
-        </>
-      ) : (
-        <div>
-          <h2>Bienvenue {user.name} !</h2>
-          <p>Email: {user.email}</p>
-        </div>
-      )}
-    </div>
+      <main className="main">
+        <Outlet context={{ setUser, user }} />
+      </main>
+    </>
   );
 }
+
+export default App;

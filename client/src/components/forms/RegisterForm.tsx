@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import "./form.css";
 import type { IUser } from "../../../../server/src/types/IUser";
 
 interface FormProps {
-  setUser: (user: IUser | null) => void;
+  setUser?: (user: IUser | null) => void;
 }
 
 export default function RegisterForm({ setUser }: FormProps) {
@@ -14,7 +15,6 @@ export default function RegisterForm({ setUser }: FormProps) {
   const [message, setMessage] = useState("");
 
   const validateEmail = (email: string) => {
-    // simple regex pour vérifier un email basique
     return /\S+@\S+\.\S+/.test(email);
   };
 
@@ -22,7 +22,6 @@ export default function RegisterForm({ setUser }: FormProps) {
     e.preventDefault();
     setMessage("");
 
-    // ✅ Vérifications locales avant fetch
     if (!validateEmail(email)) {
       setMessage("Email invalide.");
       return;
@@ -44,30 +43,15 @@ export default function RegisterForm({ setUser }: FormProps) {
 
       if (!res.ok) {
         setMessage(data.message || "Erreur d'inscription");
-        setUser(null);
+        setUser?.(null);
       } else {
-        setMessage(
-          "Inscription réussie ! Vous pouvez maintenant vous connecter.",
-        );
-
-        // Optionnel : connecter directement après inscription
-        // const loginRes = await fetch("http://localhost:3310/api/login", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   credentials: "include",
-        //   body: JSON.stringify({ email, password }),
-        // });
-        // const loginData = await loginRes.json();
-        // if (loginRes.ok) {
-        //   const meRes = await fetch("http://localhost:3310/api/me", { credentials: "include" });
-        //   const meData = await meRes.json();
-        //   setUser(meData);
-        // }
+        setMessage("Inscription réussie !");
+        setUser?.(null);
       }
     } catch (error) {
       console.error(error);
       setMessage("Erreur réseau");
-      setUser(null);
+      setUser?.(null);
     }
   };
 
@@ -76,8 +60,8 @@ export default function RegisterForm({ setUser }: FormProps) {
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <input
-            type="text"
             id="name"
+            type="text"
             required
             placeholder=" "
             value={name}
@@ -88,8 +72,8 @@ export default function RegisterForm({ setUser }: FormProps) {
 
         <div className="input-group">
           <input
-            type="email"
             id="email"
+            type="email"
             required
             placeholder=" "
             value={email}
@@ -100,8 +84,8 @@ export default function RegisterForm({ setUser }: FormProps) {
 
         <div className="input-group">
           <input
-            type="password"
             id="password"
+            type="password"
             required
             placeholder=" "
             value={password}
@@ -112,8 +96,8 @@ export default function RegisterForm({ setUser }: FormProps) {
 
         <div className="input-group">
           <input
-            type="password"
             id="confirmPassword"
+            type="password"
             required
             placeholder=" "
             value={confirmPassword}
@@ -123,6 +107,9 @@ export default function RegisterForm({ setUser }: FormProps) {
         </div>
 
         <button type="submit">S'inscrire</button>
+        <p style={{ marginTop: "1rem" }}>
+          Déjà un compte ? <Link to="/login">Se connecter</Link>
+        </p>
       </form>
 
       {message && <p>{message}</p>}
