@@ -1,10 +1,13 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f5f7fa;
   margin: 0;
+  color: var(--color-text-main);
 }
 
-/* Conteneur principal */
+/* ========================= */
+/* Layout                    */
+/* ========================= */
+
 .profile-container {
   max-width: 800px;
   margin: 40px auto;
@@ -12,55 +15,155 @@ body {
   text-align: center;
 }
 
-/* Titres */
-h1,
-h2 {
-  margin-bottom: 20px;
-}
+/* ========================= */
+/* Inputs                    */
+/* ========================= */
 
-/* Formulaire création */
 input {
   display: block;
   width: 100%;
   max-width: 400px;
   margin: 10px auto;
-  padding: 10px;
+  padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-/* Boutons */
-button {
-  margin: 10px 5px;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 8px;
-  background: #4caf50;
-  color: white;
-  cursor: pointer;
+  border: 1px solid var(--color-border);
   transition: 0.2s;
 }
 
-button:hover {
-  background: #45a049;
+input:focus {
+  outline: none;
+  border-color: var(--color-accent);
 }
 
-/* Cartes projet */
+/* ========================= */
+/* Boutons (base)            */
+/* ========================= */
+
+.btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  transform: translateY(0);
+}
+
+/* effet global hover (plus premium) */
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* ========================= */
+/* Variantes boutons         */
+/* ========================= */
+
+.btn-success {
+  background: var(--color-success);
+  color: var(--color-text-light);
+}
+
+.btn-success:hover {
+  background: var(--color-success-hover);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: var(--color-text-light);
+}
+
+.btn-danger:hover {
+  filter: brightness(0.9);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--color-text-light);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+}
+
+/* ========================= */
+/* Actions                   */
+/* ========================= */
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ========================= */
+/* Cartes projet             */
+/* ========================= */
+
 .project-card {
-  background: white;
-  padding: 15px;
+  background: var(--color-surface);
+  padding: 14px;
   margin: 15px auto;
   border-radius: 12px;
   max-width: 500px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px var(--glass-shadow);
+  border: 1px solid var(--glass-border);
+  transition: 0.25s ease;
 }
 
-/* Liens */
-a {
+.project-card:hover {
+  transform: translateY(-3px);
+}
+
+/* ========================= */
+/* Titres / liens projets    */
+/* ========================= */
+
+.project-card a {
+  position: relative;
+  display: inline-block;
   text-decoration: none;
-  color: #333;
+  color: var(--color-text-main);
+  transition: color 0.3s ease, transform 0.25s ease;
 }
 
-a h3 {
+/* Hover */
+.project-card a:hover {
+  color: var(--color-accent);
+  transform: translateX(4px);
+  text-shadow: 0 2px 8px rgba(251, 168, 117, 0.25);
+}
+
+/* underline animée */
+.project-card a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transition: width 0.3s ease;
+}
+
+.project-card a:hover::after {
+  width: 100%;
+}
+
+/* ========================= */
+/* Titres généraux           */
+/* ========================= */
+
+h1,
+h2 {
+  margin-bottom: 20px;
+}
+
+/* ========================= */
+/* Bouton global spacing     */
+/* ========================= */
+
+button {
   margin: 0;
 }

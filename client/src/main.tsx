@@ -4,6 +4,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext";
 import "./App.css";
+import "./styles/palette.css";
 
 import App from "./App";
 import ProtectedRoute from "./components/ProtectedRoute";

@@ -47,16 +47,24 @@ export class ProjectRepository {
     return rows[0] || null;
   }
 
+  // async update(id: number, project: Partial<Omit<IProject, "id">>) {
+  //   const [result] = await databaseClient.query<Result>(
+  //     `
+  //     UPDATE project
+  //     SET
+  //       title = COALESCE(?, title),
+  //       description = COALESCE(?, description)
+  //     WHERE id_project = ?
+  //     `,
+  //     [project.title, project.description, id],
+  //   );
+
+  //   return result.affectedRows;
+  // }
   async update(id: number, project: Partial<Omit<IProject, "id">>) {
     const [result] = await databaseClient.query<Result>(
-      "UPDATE project SET title = ?, description = ?, status = ?, position = ? WHERE id_project = ?",
-      [
-        project.title,
-        project.description,
-        project.status,
-        project.position,
-        id,
-      ],
+      "UPDATE project SET title = ?, description = ? WHERE id_project = ?",
+      [project.title, project.description, id],
     );
 
     return result.affectedRows;
