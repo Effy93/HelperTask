@@ -3,6 +3,8 @@ import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../styles/profile.css";
 
+import { FiCheck, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
+
 type Project = {
   id: number;
   title: string;
@@ -115,96 +117,114 @@ export default function Profile() {
   if (!user) return <Navigate to="/login" />;
 
   return (
-    <div className="profile-container">
-      <h1>Bienvenue {user.name}</h1>
+    <div className="profile-page">
+      <div className="profile-hero">
+        <h1>Bienvenue {user.name}</h1>
+      </div>
 
-      <h2>Créer un projet</h2>
+      {/* CREATE */}
+      <div className="panel">
+        <h2>Créer un projet</h2>
 
-      <input
-        type="text"
-        placeholder="Nom du projet"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+        <div className="input-row">
+          <input
+            type="text"
+            placeholder="Nom du projet"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
 
-      <input
-        type="text"
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-
-      <button type="button" className="btn btn-success" onClick={createProject}>
-        Créer
-      </button>
-
-      <h2>Mes projets</h2>
-
-      {projects.map((project) => (
-        <div key={project.id} className="project-card">
-          {editingId === project.id ? (
-            <>
-              <input
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-              />
-
-              <input
-                value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
-              />
-
-              <div className="actions">
-                <button
-                  type="button"
-                  className="btn btn-success"
-                  onClick={() => updateProject(project.id)}
-                >
-                  Valider
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={() => setEditingId(null)}
-                >
-                  Annuler
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <Link to={`/project/${project.id}`}>
-                <h3>{project.title}</h3>
-              </Link>
-
-              <p>{project.description}</p>
-
-              <div className="actions">
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => {
-                    setEditingId(project.id);
-                    setEditTitle(project.title);
-                    setEditDescription(project.description);
-                  }}
-                >
-                  Modifier
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={() => deleteProject(project.id)}
-                >
-                  Supprimer
-                </button>
-              </div>
-            </>
-          )}
+          <button
+            type="button"
+            className="icon-btn icon-success"
+            onClick={createProject}
+          >
+            <FiCheck />
+          </button>
         </div>
-      ))}
+
+        <div className="input-row">
+          <input
+            type="text"
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* LIST */}
+      <div className="panel">
+        <h2>Mes projets</h2>
+
+        {projects.map((project) => (
+          <div key={project.id} className="project-card">
+            {editingId === project.id ? (
+              <>
+                <div className="input-row">
+                  <input
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                  />
+
+                  <button
+                    type="button"
+                    className="icon-btn icon-success"
+                    onClick={() => updateProject(project.id)}
+                  >
+                    <FiCheck />
+                  </button>
+                </div>
+
+                <div className="input-row">
+                  <input
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                  />
+
+                  <button
+                    type="button"
+                    className="icon-btn icon-danger"
+                    onClick={() => setEditingId(null)}
+                  >
+                    <FiX />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <Link to={`/project/${project.id}`}>
+                  <h2 className="project-title">{project.title}</h2>
+                </Link>
+
+                <p>{project.description}</p>
+
+                <div className="actions">
+                  <button
+                    type="button"
+                    className="icon-btn icon-primary"
+                    onClick={() => {
+                      setEditingId(project.id);
+                      setEditTitle(project.title);
+                      setEditDescription(project.description);
+                    }}
+                  >
+                    <FiEdit2 />
+                  </button>
+
+                  <button
+                    type="button"
+                    className="icon-btn icon-danger"
+                    onClick={() => deleteProject(project.id)}
+                  >
+                    <FiTrash2 />
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

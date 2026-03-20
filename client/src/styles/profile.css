@@ -1,169 +1,150 @@
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  color: var(--color-text-main);
+  font-family: Arial, sans-serif;
 }
 
-/* ========================= */
-/* Layout                    */
-/* ========================= */
-
-.profile-container {
-  max-width: 800px;
+.profile-page {
+  max-width: 900px;
   margin: 40px auto;
   padding: 20px;
-  text-align: center;
 }
 
-/* ========================= */
-/* Inputs                    */
-/* ========================= */
+.profile-hero {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
-input {
-  display: block;
-  width: 100%;
-  max-width: 400px;
-  margin: 10px auto;
-  padding: 10px 12px;
-  border-radius: 8px;
+/* PANELS */
+.panel {
+  background: var(--color-surface);
+  padding: 20px;
+  margin-bottom: 25px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+/* INPUTS */
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.input-row input {
+  flex: 1;
+  padding: 10px;
   border: 1px solid var(--color-border);
   transition: 0.2s;
 }
 
-input:focus {
-  outline: none;
+.input-row input:focus {
   border-color: var(--color-accent);
+  outline: none;
 }
 
-/* ========================= */
-/* Boutons (base)            */
-/* ========================= */
-
-.btn {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.2s ease;
-  transform: translateY(0);
-}
-
-/* effet global hover (plus premium) */
-.btn:hover {
-  transform: translateY(-1px);
-}
-
-/* ========================= */
-/* Variantes boutons         */
-/* ========================= */
-
-.btn-success {
-  background: var(--color-success);
-  color: var(--color-text-light);
-}
-
-.btn-success:hover {
-  background: var(--color-success-hover);
-}
-
-.btn-danger {
-  background: var(--color-danger);
-  color: var(--color-text-light);
-}
-
-.btn-danger:hover {
-  filter: brightness(0.9);
-}
-
-.btn-primary {
-  background: var(--color-primary);
-  color: var(--color-text-light);
-}
-
-.btn-primary:hover {
-  background: var(--color-primary-hover);
-}
-
-/* ========================= */
-/* Actions                   */
-/* ========================= */
-
-.actions {
+/* ICON BUTTONS */
+.icon-btn {
+  width: 34px;
+  height: 34px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
-/* ========================= */
-/* Cartes projet             */
-/* ========================= */
+.icon-btn:hover {
+  transform: translateY(-1px) scale(1.05);
+}
 
+.icon-success {
+  background: var(--color-success);
+  color: white;
+}
+
+.icon-danger {
+  background: var(--color-danger);
+  color: white;
+}
+
+.icon-primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* PROJECT CARD */
 .project-card {
-  background: var(--color-surface);
-  padding: 14px;
-  margin: 15px auto;
-  border-radius: 12px;
-  max-width: 500px;
-  box-shadow: 0 4px 10px var(--glass-shadow);
-  border: 1px solid var(--glass-border);
-  transition: 0.25s ease;
+  padding: 15px;
+  margin: 12px 0;
+  position: relative;
+  transition: 0.2s ease;
 }
 
 .project-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
-/* ========================= */
-/* Titres / liens projets    */
-/* ========================= */
+/* séparation premium */
+.project-card:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 5%;
+  width: 90%;
+  height: 1px;
 
-.project-card a {
-  position: relative;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0, 0, 0, 0.15),
+    transparent
+  );
+
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* TITLE */
+.project-title {
   display: inline-block;
-  text-decoration: none;
-  color: var(--color-text-main);
-  transition: color 0.3s ease, transform 0.25s ease;
+  transition: 0.3s;
 }
 
-/* Hover */
-.project-card a:hover {
+.project-title:hover {
   color: var(--color-accent);
   transform: translateX(4px);
-  text-shadow: 0 2px 8px rgba(251, 168, 117, 0.25);
+}
+
+/* ACTIONS */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.panel a {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
 }
 
 /* underline animée */
-.project-card a::after {
+.panel a::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -2px;
-  width: 0;
+  bottom: -3px;
+  width: 0%;
   height: 2px;
   background: var(--color-accent);
   transition: width 0.3s ease;
 }
 
-.project-card a:hover::after {
+.panel a:hover::after {
   width: 100%;
 }
 
-/* ========================= */
-/* Titres généraux           */
-/* ========================= */
-
-h1,
-h2 {
-  margin-bottom: 20px;
-}
-
-/* ========================= */
-/* Bouton global spacing     */
-/* ========================= */
-
-button {
-  margin: 0;
+.panel a:hover {
+  color: var(--color-accent);
 }
