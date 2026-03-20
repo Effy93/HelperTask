@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-
 import userRepository from "../models/userRepository";
 import type { IUser } from "../types/IUser";
 
@@ -19,26 +18,25 @@ const verifyToken = async (
   try {
     const token = req.cookies.access_token;
 
+    console.log("COOKIES:", req.cookies);
+
     if (!token) {
-      res
-        .status(401)
-        .json({ message: "Action non autorisée, veuillez vous connectez" });
+      res.status(401).json({ message: "Pas de token" });
       return;
     }
 
     const decoded = jwt.verify(token, process.env.SECRET_KEY || "key") as {
-      user_id: string;
-      user_email: string;
-      role: string;
+      user_id: number;
     };
 
-    const users = await userRepository.getByEmail(decoded.user_email);
+    // 🔥 ON UTILISE L’ID, PAS L’EMAIL
+    const users = await userRepository.getById(decoded.user_id);
     const user = users[0];
+    // console.log("DECODED:", decoded);
+    // console.log("USERS:", users);
 
     if (!user) {
-      res
-        .status(401)
-        .json({ message: "Action non autorisée, veuillez vous inscrire" });
+      res.status(401).json({ message: "Utilisateur introuvable" });
       return;
     }
 
@@ -46,8 +44,8 @@ const verifyToken = async (
 
     next();
   } catch (error) {
-    console.error(error);
-    res.status(401).json({ message: "Accès interdit" });
+    console.error("JWT ERROR:", error);
+    res.status(401).json({ message: "Token invalide" });
   }
 };
 

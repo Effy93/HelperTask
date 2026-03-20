@@ -18,7 +18,7 @@ class UserRepository {
 
   async update(id: number, user: Partial<Omit<IUser, "id">>) {
     const result = await databaseClient.query<Rows>(
-      "UPDATE user SET name =?, email =?, password =?, WHERE id =? ",
+      "UPDATE user SET name =?, email =?, password =? WHERE id =? ",
       [user.name, user.email, user.password, id],
     );
     return result;
@@ -26,11 +26,18 @@ class UserRepository {
 
   // getbymail
   async getByEmail(email: string) {
-    const [rows] = await databaseClient.query<Rows & IUser[]>(
+    const [rows] = await databaseClient.query<Rows>(
       "SELECT * FROM user WHERE email = ?",
       [email],
     );
-    return rows;
+    return rows as IUser[];
+  }
+  async getById(id: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT * FROM user WHERE id = ?",
+      [id],
+    );
+    return rows as IUser[];
   }
 
   async delete(id: number) {

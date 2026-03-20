@@ -1,10 +1,18 @@
 import type { RequestHandler } from "express";
+import type { AuthRequest } from "../midllewares/verifyToken";
 import projectRepository from "../models/projectRepository";
 import type { IProject } from "../types/IProject";
 
 const browse: RequestHandler = async (req, res) => {
   try {
-    const projects = await projectRepository.readAll();
+    const userId = (req as AuthRequest).user?.id;
+
+    if (!userId) {
+      res.status(401).json({ message: "Non authentifié" });
+      return;
+    }
+
+    const projects = await projectRepository.readAllByUser(userId);
     res.json(projects);
   } catch {
     res.status(500).json({ message: "Erreur serveur" });
@@ -35,29 +43,44 @@ const read: RequestHandler = async (req, res) => {
 
 const add: RequestHandler = async (req, res) => {
   try {
-    if (!req.body) {
-      res.status(400).json({ message: "Body manquant" });
+    let { title, description, status, position } = req.body;
+
+    const userId = (req as AuthRequest).user?.id;
+
+    if (!title) {
+      res.status(400).json({ message: "Titre requis" });
       return;
     }
 
-    const { title, description, status, position } = req.body;
-
-    if (!title || !description || !status) {
-      res.status(400).json({ message: "Champs requis" });
+    if (!userId) {
+      res.status(401).json({ message: "Non authentifié" });
       return;
     }
 
-    const newProject: Omit<IProject, "id"> = {
+    // valeurs par défaut
+    description = description?.trim() || "";
+    status = status || "todo";
+    position = position ?? 0;
+
+    const insertId = await projectRepository.create(
+      {
+        title,
+        description,
+        status,
+        position,
+      },
+      userId,
+    );
+
+    res.status(201).json({
+      id: insertId,
       title,
       description,
       status,
-      position: position ?? 0,
-    };
-
-    const insertId = await projectRepository.create(newProject);
-
-    res.status(201).json({ id: insertId });
-  } catch {
+      position,
+    });
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
