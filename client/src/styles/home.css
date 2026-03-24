@@ -1,0 +1,46 @@
+.home {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-content {
+  text-align: center;
+  padding: 40px 30px;
+  max-width: 500px;
+  background: var(--color-surface);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+
+.home h1 {
+  margin-bottom: 10px;
+  font-size: 2.2rem;
+}
+
+.subtitle {
+  margin-bottom: 15px;
+  opacity: 0.8;
+}
+
+.auth-text {
+  margin-bottom: 25px;
+  opacity: 0.7;
+  font-size: 0.95rem;
+}
+
+/* bouton */
+.home-btn {
+  display: inline-block;
+  padding: 10px 22px;
+  background: var(--color-primary);
+  color: white;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.home-btn:hover {
+  transform: translateY(-2px);
+  background: var(--color-accent);
+}

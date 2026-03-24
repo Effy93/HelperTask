@@ -85,7 +85,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* séparation premium */
 .project-card:not(:last-child)::after {
   content: "";
   position: absolute;
@@ -108,6 +107,7 @@ body {
 .project-title {
   display: inline-block;
   transition: 0.3s;
+  cursor: pointer;
 }
 
 .project-title:hover {
@@ -147,4 +147,18 @@ body {
 
 .panel a:hover {
   color: var(--color-accent);
+}
+
+.project-link {
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.project-link * {
+  cursor: pointer;
+}
+
+.project-card {
+  cursor: pointer;
 }

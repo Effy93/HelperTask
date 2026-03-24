@@ -1,4 +1,6 @@
+/* ========================= */
 /* HEADER */
+/* ========================= */
 .header {
   position: fixed;
   top: 0;
@@ -13,7 +15,9 @@
   padding: 1.5rem 2rem;
 }
 
+/* ========================= */
 /* LOGO */
+/* ========================= */
 .logo span {
   display: inline-block;
   transition: transform 0.4s ease-out, letter-spacing 0.6s ease-out;
@@ -31,7 +35,9 @@
   outline: none;
 }
 
+/* ========================= */
 /* NAV */
+/* ========================= */
 nav ul {
   list-style: none;
   display: flex;
@@ -40,21 +46,41 @@ nav ul {
   padding: 0;
 }
 
-/* lien */
-nav ul li a.nav-link {
+nav ul li {
+  display: flex;
+  align-items: center;
+}
+
+/* ========================= */
+/* LIENS (a + button UNIFIÉS) */
+/* ========================= */
+nav ul li .nav-link {
   position: relative;
   display: inline-block;
   text-decoration: none;
   color: var(--color-main);
   font-weight: 500;
   padding: 6px 0;
+  cursor: pointer;
   transition: transform 0.3s ease, color 0.3s ease;
   outline: none;
 }
 
-/* coins */
-nav ul li a.nav-link::before,
-nav ul li a.nav-link::after {
+/* RESET spécifique pour button */
+nav ul li button.nav-link {
+  all: unset;
+  display: inline-block;
+  cursor: pointer;
+  color: var(--color-main);
+  font-weight: 500;
+  padding: 6px 0;
+}
+
+/* ========================= */
+/* ANIMATIONS coins */
+/* ========================= */
+nav ul li .nav-link::before,
+nav ul li .nav-link::after {
   content: "";
   position: absolute;
   width: 12px;
@@ -65,14 +91,14 @@ nav ul li a.nav-link::after {
 }
 
 /* positions */
-nav ul li a.nav-link::before {
+nav ul li .nav-link::before {
   top: -4px;
   left: -4px;
   border-top: 2px solid;
   border-left: 2px solid;
 }
 
-nav ul li a.nav-link::after {
+nav ul li .nav-link::after {
   bottom: -4px;
   right: -4px;
   border-bottom: 2px solid;
@@ -80,13 +106,17 @@ nav ul li a.nav-link::after {
 }
 
 /* hover */
-nav ul li a.nav-link:hover::before,
-nav ul li a.nav-link:hover::after {
+nav ul li .nav-link:hover::before,
+nav ul li .nav-link:hover::after {
   opacity: 1;
   transform: scale(1) rotate(20deg);
 }
 
-nav ul li a.nav-link:hover {
+nav ul li .nav-link:hover {
   color: var(--color-link);
   transform: translateY(-4px) scale(1.1);
+}
+
+nav ul li button.nav-link:hover {
+  color: var(--color-danger);
 }

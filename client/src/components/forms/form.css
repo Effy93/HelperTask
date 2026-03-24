@@ -56,7 +56,7 @@ button[type="submit"]:hover {
 }
 
 /* Message */
-p {
+form p {
   margin-top: 10px;
   color: red;
 }
