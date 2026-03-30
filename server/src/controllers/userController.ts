@@ -47,7 +47,7 @@ const add: RequestHandler = async (req, res) => {
       password: hashedPassword,
     };
     const insertId = await userRepository.create(newUser);
-    res.status(201).json({ message: "Utilisateur créer!" });
+    res.status(201).json({ message: "Utilisateur créé!" });
   } catch (error) {
     res.status(500).json({ message: "erreur serveur" });
   }
