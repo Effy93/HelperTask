@@ -29,7 +29,7 @@ const verifyToken = async (
       user_id: number;
     };
 
-    // 🔥 ON UTILISE L’ID, PAS L’EMAIL
+    // ON UTILISE L’ID, PAS L’EMAIL
     const users = await userRepository.getById(decoded.user_id);
     const user = users[0];
     // console.log("DECODED:", decoded);
