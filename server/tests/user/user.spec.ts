@@ -40,3 +40,5 @@ describe("POST /api/users", () => {
     // expect(response.body.insertId).toBe(result.insertId);
   });
 });
+
+//tests d’intégration API avec mocks.

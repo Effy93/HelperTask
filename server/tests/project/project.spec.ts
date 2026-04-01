@@ -148,3 +148,5 @@ describe("DELETE /api/projects/:id", () => {
     expect(res.status).toBe(404);
   });
 });
+
+// tests d’intégration API avec mocks.
