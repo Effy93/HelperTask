@@ -124,7 +124,7 @@ describe("UserRepository", () => {
         [1],
       );
 
-      expect(result).toEqual([fakeResult, []]);
+      expect(result).toBe(1);
     });
   });
 
