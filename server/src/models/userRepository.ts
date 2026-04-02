@@ -43,14 +43,14 @@ class UserRepository {
   async delete(id: number) {
     // mysql retourne un "tuple" = tableau avec plusieurs élèments strictement définis
     //  [result, fields] où
-    // - result =  objet qui contient les propriétés affectedRows, insertId ... 
+    // - result =  objet qui contient les propriétés affectedRows, insertId ...
     // - et fields = tableau d'objets décrivant les colonnes de la requête
     const [result] = await databaseClient.query<Result>(
       "DELETE from user WHERE id = ?",
       [id],
     );
     // renvoi UNIQUEMENT la propriété de l'élèment result
-    return result.affectedRows
+    return result.affectedRows;
   }
 }
 
