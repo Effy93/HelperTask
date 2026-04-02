@@ -4,12 +4,6 @@ import app from "../../src/app";
 import type { AuthRequest } from "../../src/midllewares/verifyToken";
 import projectRepository from "../../src/models/projectRepository";
 
-const req = {
-  user: { id: 1 },
-  body: {},
-  params: {},
-} as AuthRequest;
-
 //  mock du middleware verifyToken
 jest.mock("../../src/midllewares/verifyToken", () => {
   return (req: Request, _res: Response, next: NextFunction) => {

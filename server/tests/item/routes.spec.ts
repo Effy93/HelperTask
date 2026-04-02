@@ -218,7 +218,6 @@ afterEach(() => {
 //   });
 // });
 
-
 //tests d’intégration API avec mocks.
 
 describe("GET /api/users", () => {
@@ -252,7 +251,6 @@ describe("POST /api/users", () => {
     // expect(response.body.insertId).toBe(result.insertId);
   });
 });
-
 
 describe("Routes", () => {
   it("ça marche", () => {
