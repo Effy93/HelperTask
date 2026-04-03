@@ -47,28 +47,31 @@ export class ProjectRepository {
     return rows[0] || null;
   }
 
-  // async update(id: number, project: Partial<Omit<IProject, "id">>) {
-  //   const [result] = await databaseClient.query<Result>(
-  //     `
-  //     UPDATE project
-  //     SET
-  //       title = COALESCE(?, title),
-  //       description = COALESCE(?, description)
-  //     WHERE id_project = ?
-  //     `,
-  //     [project.title, project.description, id],
-  //   );
-
-  //   return result.affectedRows;
-  // }
+  // COALESCE : si un champ n'est pas envoyé (NULL), on conserve la valeur existante en base.
+  // => si aucune valeur envoyé par le front = prends l'ancienne valeur
+  // (controller doit protégé des valeurs vide ou null)
   async update(id: number, project: Partial<Omit<IProject, "id">>) {
     const [result] = await databaseClient.query<Result>(
-      "UPDATE project SET title = ?, description = ? WHERE id_project = ?",
+      `
+      UPDATE project
+      SET
+        title = COALESCE(?, title),
+        description = COALESCE(?, description)
+      WHERE id_project = ?
+      `,
       [project.title, project.description, id],
     );
 
     return result.affectedRows;
   }
+  // async update(id: number, project: Partial<Omit<IProject, "id">>) {
+  //   const [result] = await databaseClient.query<Result>(
+  //     "UPDATE project SET title = ?, description = ? WHERE id_project = ?",
+  //     [project.title, project.description, id],
+  //   );
+
+  //   return result.affectedRows;
+  // }
 
   async delete(id: number) {
     const [result] = await databaseClient.query<Result>(

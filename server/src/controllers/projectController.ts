@@ -96,8 +96,9 @@ const edit: RequestHandler = async (req, res) => {
 
     const { title, description, status, position } = req.body;
 
-    if (!title && !description && !status && position === undefined) {
-      res.status(400).json({ message: "Aucune donnée à modifier" });
+    // Règle logique métier : modification partiel mais si modification du titre, celui si doit être non vide et  non null
+    if (title !== undefined && title.trim() === "") {
+      res.status(400).json({ message: "Titre requis" });
       return;
     }
 
