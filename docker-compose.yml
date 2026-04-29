@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: client/Dockerfile.dev
     ports:
-      - "5173:5173"
+      - "3000:3000"
     volumes:
       - ./client:/app
    
@@ -18,7 +18,7 @@ services:
       context: .
       dockerfile: server/Dockerfile.dev
     ports:
-      - "3000:3000"
+      - "3310:3310"
     volumes:
       - ./server:/app
       # Volume nommé pour le cache
@@ -31,8 +31,8 @@ services:
   database:
     image: mysql:8
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: app
+      MYSQL_ROOT_PASSWORD: Tolteque42
+      MYSQL_DATABASE: task_helper
     ports:
       - "3306:3306"
     volumes:
