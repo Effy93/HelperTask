@@ -4,7 +4,7 @@ import client from "./client";
 client
   .getConnection()
   .then((connection) => {
-    console.info(`Using database ${process.env.DB_NAME}`);
+    console.info(`Need use database : ${process.env.DB_NAME}`);
 
     connection.release();
   })

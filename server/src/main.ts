@@ -1,5 +1,6 @@
 // Load environment variables from .env file
 import "dotenv/config";
+import { printDatabaseInfo } from "../database/client";
 
 // Check database connection
 // Note: This is optional and can be removed if the database connection
@@ -15,7 +16,12 @@ const port = process.env.APP_PORT;
 // Start the server and listen on the specified port
 app
   .listen(port, () => {
-    console.info(`Server is listening on port ${port}`);
+    console.info(`Server express listening on port ${port}`);
+      try { printDatabaseInfo();
+  } catch (e) {
+    console.log("DB debug failed");
+  }
+    
   })
   .on("error", (err: Error) => {
     console.error("Error:", err.message);
