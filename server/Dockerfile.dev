@@ -2,9 +2,9 @@ FROM node:lts-alpine3.22
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY /server/package*.json ./
 RUN npm i
 
-COPY . .
+COPY server .
 
 CMD ["npm", "run", "dev"]

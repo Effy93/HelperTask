@@ -10,6 +10,10 @@ const client = mysql.createPool({
   user: DB_USER,
   password: DB_PASSWORD,
   database: DB_NAME,
+  // 👇 IMPORTANT POUR MYSQL 8 DOCKER
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 // Ready to export

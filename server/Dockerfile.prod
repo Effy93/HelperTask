@@ -14,11 +14,16 @@ FROM node:lts-alpine3.22
 
 WORKDIR /app
 
+# dépendances runtime
 COPY package*.json ./
-# COPY package
 RUN npm install --omit=dev
 
+# code compilé
 COPY --from=builder /app/server/dist ./server/dist
 
+# IMPORTANT : dotenv ou config runtime
+COPY server/.env ./server/.env
+
+EXPOSE 3310
 
 CMD ["node", "server/dist/index.js"]
