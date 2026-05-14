@@ -16,7 +16,14 @@ type Props = {
   onStatusChange?: (taskId: number, status: ITask["status"]) => void;
 };
 
-export default function Column({ id, title, tasks, onDelete, onUpdate, onStatusChange }: Props) {
+export default function Column({
+  id,
+  title,
+  tasks,
+  onDelete,
+  onUpdate,
+  onStatusChange,
+}: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: `column-${id}` });
 
   return (

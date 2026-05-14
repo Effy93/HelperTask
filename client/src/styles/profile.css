@@ -6,11 +6,10 @@ body {
 .profile-page {
   display: flex;
   flex-direction: column;
-  justify-content: center; 
+  justify-content: center;
   max-width: 900px;
   margin: 40px auto;
   padding: 20px;
-
 }
 
 .profile-hero {
@@ -134,7 +133,6 @@ body {
 }
 
 /* BOARD & TASKS */
-
 
 .profile-hero {
   display: flex;

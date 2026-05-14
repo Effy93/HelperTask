@@ -205,7 +205,11 @@ export default function Board() {
         );
         const destItems = [
           ...destinationItems,
-          { ...editingTask, status: taskStatus, position: destinationItems.length },
+          {
+            ...editingTask,
+            status: taskStatus,
+            position: destinationItems.length,
+          },
         ];
 
         const sourceUpdates = sourceItems.map((task, index) => ({
@@ -249,10 +253,7 @@ export default function Board() {
     await fetchTasks();
   };
 
-  const handleUpdateTask = async (
-    taskId: number,
-    updates: Partial<ITask>,
-  ) => {
+  const handleUpdateTask = async (taskId: number, updates: Partial<ITask>) => {
     const task = tasks.find((item) => item.id === taskId);
     if (!task) return;
 
@@ -282,7 +283,14 @@ export default function Board() {
       const sourceItems = buildOrderedColumn(task.status).filter(
         (item) => item.id !== taskId,
       );
-      const destItems = [...buildOrderedColumn(updates.status), { ...task, status: updates.status, position: buildOrderedColumn(updates.status).length }];
+      const destItems = [
+        ...buildOrderedColumn(updates.status),
+        {
+          ...task,
+          status: updates.status,
+          position: buildOrderedColumn(updates.status).length,
+        },
+      ];
 
       const sourceUpdates = sourceItems.map((item, index) => ({
         id: item.id,
@@ -301,10 +309,7 @@ export default function Board() {
     await fetchTasks();
   };
 
-  const handleChangeTaskStatus = async (
-    taskId: number,
-    status: TaskStatus,
-  ) => {
+  const handleChangeTaskStatus = async (taskId: number, status: TaskStatus) => {
     const task = tasks.find((item) => item.id === taskId);
     if (!task || task.status === status) return;
 

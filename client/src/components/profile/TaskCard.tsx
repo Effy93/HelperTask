@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { FiTrash2, FiEdit2, FiCheck, FiX, FiChevronDown } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { FiCheck, FiChevronDown, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
 import type { ITask, TaskStatus } from "../../../../server/src/types/ITask";
 
 type Props = {
@@ -11,7 +11,12 @@ type Props = {
   onStatusChange?: (taskId: number, status: TaskStatus) => void;
 };
 
-export default function TaskCard({ task, onDelete, onUpdate, onStatusChange }: Props) {
+export default function TaskCard({
+  task,
+  onDelete,
+  onUpdate,
+  onStatusChange,
+}: Props) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: task.id.toString(),
@@ -44,7 +49,9 @@ export default function TaskCard({ task, onDelete, onUpdate, onStatusChange }: P
     { status: "done" as TaskStatus, label: "Terminé" },
   ];
 
-  const currentStatus = statusOptions.find((option) => option.status === task.status);
+  const currentStatus = statusOptions.find(
+    (option) => option.status === task.status,
+  );
 
   return (
     <div
