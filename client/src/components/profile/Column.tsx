@@ -12,15 +12,17 @@ type Props = {
   title: string;
   tasks: ITask[];
   onDelete?: (taskId: number) => void;
+  onUpdate?: (taskId: number, updates: Partial<ITask>) => void;
+  onStatusChange?: (taskId: number, status: ITask["status"]) => void;
 };
 
-export default function Column({ id, title, tasks, onDelete }: Props) {
+export default function Column({ id, title, tasks, onDelete, onUpdate, onStatusChange }: Props) {
   const { setNodeRef, isOver } = useDroppable({ id: `column-${id}` });
 
   return (
     <div
       ref={setNodeRef}
-      className={`column ${isOver ? "column-over" : ""}`}
+      className={`column ${id} ${isOver ? "column-over" : ""}`}
       data-column-id={id}
     >
       <h2>{title}</h2>
@@ -30,7 +32,13 @@ export default function Column({ id, title, tasks, onDelete }: Props) {
         strategy={verticalListSortingStrategy}
       >
         {tasks.map((task) => (
-          <TaskCard key={task.id} task={task} onDelete={onDelete} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            onDelete={onDelete}
+            onUpdate={onUpdate}
+            onStatusChange={onStatusChange}
+          />
         ))}
       </SortableContext>
     </div>

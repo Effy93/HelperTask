@@ -7,7 +7,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 
 import type { ITask, TaskStatus } from "../../../server/src/types/ITask";
@@ -48,6 +48,10 @@ export default function Board() {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
+  const [newCollaborator, setNewCollaborator] = useState("");
+  const [taskStatus, setTaskStatus] = useState<TaskStatus>("todo");
+  const [editingTask, setEditingTask] = useState<ITask | null>(null);
+  const [showTaskPanel, setShowTaskPanel] = useState(false);
   const [loadingTasks, setLoadingTasks] = useState(true);
 
   const sensors = useSensors(
@@ -69,6 +73,31 @@ export default function Board() {
     }, grouped);
   }, [tasks]);
 
+  const fetchTasks = useCallback(async () => {
+    setLoadingTasks(true);
+
+    try {
+      const res = await fetch(
+        `http://localhost:3310/api/tasks?project_id=${projectId}`,
+        {
+          credentials: "include",
+        },
+      );
+
+      if (!res.ok) {
+        setTasks([]);
+        return;
+      }
+
+      const data = await res.json();
+      setTasks(Array.isArray(data) ? data.map(normalizeTask) : []);
+    } catch {
+      setTasks([]);
+    } finally {
+      setLoadingTasks(false);
+    }
+  }, [projectId]);
+
   useEffect(() => {
     if (Number.isNaN(projectId)) return;
 
@@ -86,34 +115,9 @@ export default function Board() {
       setProject(projectData);
     };
 
-    const fetchTasks = async () => {
-      setLoadingTasks(true);
-
-      try {
-        const res = await fetch(
-          `http://localhost:3310/api/tasks?project_id=${projectId}`,
-          {
-            credentials: "include",
-          },
-        );
-
-        if (!res.ok) {
-          setTasks([]);
-          return;
-        }
-
-        const data = await res.json();
-        setTasks(Array.isArray(data) ? data.map(normalizeTask) : []);
-      } catch {
-        setTasks([]);
-      } finally {
-        setLoadingTasks(false);
-      }
-    };
-
     fetchProject();
     fetchTasks();
-  }, [projectId]);
+  }, [projectId, fetchTasks]);
 
   const updateTaskOrder = async (
     updates: Array<{ id: number; status: TaskStatus; position: number }>,
@@ -130,65 +134,181 @@ export default function Board() {
     });
   };
 
-  const handleCreateTask = async () => {
+  const closeTaskPanel = () => {
+    setShowTaskPanel(false);
+    setEditingTask(null);
+    setNewTitle("");
+    setNewContent("");
+    setNewCollaborator("");
+    setTaskStatus("todo");
+  };
+
+  const openTaskPanel = (task?: ITask) => {
+    if (task) {
+      setEditingTask(task);
+      setNewTitle(task.title);
+      setNewContent(task.content);
+      setTaskStatus(task.status);
+      setNewCollaborator("");
+    } else {
+      setEditingTask(null);
+      setNewTitle("");
+      setNewContent("");
+      setTaskStatus("todo");
+      setNewCollaborator("");
+    }
+
+    setShowTaskPanel(true);
+  };
+
+  const handleCreateOrUpdateTask = async () => {
     if (!newTitle.trim()) {
       alert("Titre de tâche requis");
       return;
     }
 
-    const nextPosition = groupedTasks.todo.length;
+    if (editingTask) {
+      const updatedTask = {
+        title: newTitle,
+        content: newContent,
+        status: taskStatus,
+        position: editingTask.position,
+      };
 
-    const res = await fetch("http://localhost:3310/api/tasks", {
-      method: "POST",
+      let destinationItems: ITask[] = [];
+
+      if (editingTask.status !== taskStatus) {
+        destinationItems = buildOrderedColumn(taskStatus);
+        updatedTask.position = destinationItems.length;
+      }
+
+      const res = await fetch(
+        `http://localhost:3310/api/tasks/${editingTask.id}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedTask),
+        },
+      );
+
+      if (!res.ok) {
+        alert("Impossible de modifier la tâche");
+        return;
+      }
+
+      if (editingTask.status !== taskStatus) {
+        const sourceItems = buildOrderedColumn(editingTask.status).filter(
+          (task) => task.id !== editingTask.id,
+        );
+        const destItems = [
+          ...destinationItems,
+          { ...editingTask, status: taskStatus, position: destinationItems.length },
+        ];
+
+        const sourceUpdates = sourceItems.map((task, index) => ({
+          id: task.id,
+          status: task.status,
+          position: index,
+        }));
+        const destUpdates = destItems.map((task, index) => ({
+          id: task.id,
+          status: task.status,
+          position: index,
+        }));
+
+        await updateTaskOrder([...sourceUpdates, ...destUpdates]);
+      }
+    } else {
+      const nextPosition = groupedTasks.todo.length;
+
+      const res = await fetch("http://localhost:3310/api/tasks", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: newTitle,
+          content: newContent,
+          status: taskStatus,
+          position: nextPosition,
+          project_id: projectId,
+        }),
+      });
+
+      if (!res.ok) {
+        alert("Impossible de créer la tâche");
+        return;
+      }
+    }
+
+    closeTaskPanel();
+    await fetchTasks();
+  };
+
+  const handleUpdateTask = async (
+    taskId: number,
+    updates: Partial<ITask>,
+  ) => {
+    const task = tasks.find((item) => item.id === taskId);
+    if (!task) return;
+
+    const body = {
+      title: updates.title ?? task.title,
+      content: updates.content ?? task.content,
+      status: updates.status ?? task.status,
+      position: updates.position ?? task.position,
+      project_id: task.project_id,
+    };
+
+    const res = await fetch(`http://localhost:3310/api/tasks/${taskId}`, {
+      method: "PUT",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        title: newTitle,
-        content: newContent,
-        status: "todo",
-        position: nextPosition,
-        project_id: projectId,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
-      alert("Impossible de créer la tâche");
+      alert("Impossible de modifier la tâche");
       return;
     }
 
-    setNewTitle("");
-    setNewContent("");
+    if (updates.status && updates.status !== task.status) {
+      const sourceItems = buildOrderedColumn(task.status).filter(
+        (item) => item.id !== taskId,
+      );
+      const destItems = [...buildOrderedColumn(updates.status), { ...task, status: updates.status, position: buildOrderedColumn(updates.status).length }];
 
-    const created = await res.json();
-    if (created?.id) {
-      setTasks((current) => [
-        ...current,
-        {
-          id: created.id,
-          title: newTitle,
-          content: newContent,
-          status: "todo",
-          position: nextPosition,
-          deadline: null,
-          project_id: projectId,
-        },
-      ]);
+      const sourceUpdates = sourceItems.map((item, index) => ({
+        id: item.id,
+        status: item.status,
+        position: index,
+      }));
+      const destUpdates = destItems.map((item, index) => ({
+        id: item.id,
+        status: item.status,
+        position: index,
+      }));
+
+      await updateTaskOrder([...sourceUpdates, ...destUpdates]);
     }
 
-    const refresh = await fetch(
-      `http://localhost:3310/api/tasks?project_id=${projectId}`,
-      {
-        credentials: "include",
-      },
-    );
-    if (refresh.ok) {
-      const refreshedData = await refresh.json();
-      if (Array.isArray(refreshedData)) {
-        setTasks(refreshedData.map(normalizeTask));
-      }
-    }
+    await fetchTasks();
+  };
+
+  const handleChangeTaskStatus = async (
+    taskId: number,
+    status: TaskStatus,
+  ) => {
+    const task = tasks.find((item) => item.id === taskId);
+    if (!task || task.status === status) return;
+
+    await handleUpdateTask(taskId, { status });
   };
 
   const handleDeleteTask = async (taskId: number) => {
@@ -308,61 +428,122 @@ export default function Board() {
   return (
     <div className="profile-page">
       <div className="profile-hero">
-        <Link to="/profile">← Retour aux projets</Link>
-        <h1>{project.title}</h1>
-        <p>{project.description}</p>
+        <div>
+          <Link to="/profile">← Retour aux projets</Link>
+          <h1>{project.title}</h1>
+          <p>{project.description}</p>
+        </div>
+        <button
+          type="button"
+          className="add-task-toggle"
+          onClick={() => openTaskPanel()}
+        >
+          + Nouvelle tâche
+        </button>
       </div>
 
-      <div className="panel task-form">
-        <h2>Nouvelle tâche</h2>
-        <div className="input-row">
-          <input
-            type="text"
-            placeholder="Titre de la tâche"
-            value={newTitle}
-            onChange={(event) => setNewTitle(event.target.value)}
-          />
-        </div>
-        <div className="input-row">
-          <input
-            type="text"
-            placeholder="Description (facultatif)"
-            value={newContent}
-            onChange={(event) => setNewContent(event.target.value)}
-          />
-          <button
-            type="button"
-            className="icon-btn icon-success"
-            onClick={handleCreateTask}
-          >
-            Ajouter
-          </button>
-        </div>
-      </div>
+      <div className="board-layout">
+        <aside className={`task-drawer ${showTaskPanel ? "open" : ""}`}>
+          <div className="drawer-header">
+            <div>
+              <h2>{editingTask ? "Modifier la tâche" : "Nouvelle tâche"}</h2>
+              <p>Renseigne le titre, la description et un collaborateur.</p>
+            </div>
+            <button
+              type="button"
+              className="drawer-close"
+              onClick={closeTaskPanel}
+              aria-label="Fermer le panneau"
+            >
+              ×
+            </button>
+          </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="board">
-          {projectStatusList.map((status) => (
-            <Column
-              key={status}
-              id={status}
-              title={
-                status === "todo"
-                  ? "À faire"
-                  : status === "doing"
-                    ? "En cours"
-                    : "Terminé"
-              }
-              tasks={buildOrderedColumn(status)}
-              onDelete={handleDeleteTask}
-            />
-          ))}
-        </div>
-      </DndContext>
+          <div className="drawer-body">
+            <label>
+              Titre
+              <input
+                type="text"
+                placeholder="Titre de la tâche"
+                value={newTitle}
+                onChange={(event) => setNewTitle(event.target.value)}
+              />
+            </label>
+            <label>
+              Description
+              <textarea
+                placeholder="Description (facultatif)"
+                value={newContent}
+                onChange={(event) => setNewContent(event.target.value)}
+              />
+            </label>
+            <label>
+              Collaborateur
+              <input
+                type="text"
+                placeholder="Nom du collaborateur"
+                value={newCollaborator}
+                onChange={(event) => setNewCollaborator(event.target.value)}
+              />
+            </label>
+            <label>
+              Statut
+              <select
+                value={taskStatus}
+                onChange={(event) =>
+                  setTaskStatus(event.target.value as TaskStatus)
+                }
+              >
+                <option value="todo">À faire</option>
+                <option value="doing">En cours</option>
+                <option value="done">Terminé</option>
+              </select>
+            </label>
+            <div className="drawer-actions">
+              <button
+                type="button"
+                className="cancel-btn"
+                onClick={closeTaskPanel}
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                className="primary-btn"
+                onClick={handleCreateOrUpdateTask}
+              >
+                {editingTask ? "Enregistrer" : "Créer la tâche"}
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="board">
+            {projectStatusList.map((status) => (
+              <Column
+                key={status}
+                id={status}
+                title={
+                  status === "todo"
+                    ? "À faire"
+                    : status === "doing"
+                      ? "En cours"
+                      : "Terminé"
+                }
+                tasks={buildOrderedColumn(status)}
+                onDelete={handleDeleteTask}
+                onUpdate={handleUpdateTask}
+                onStatusChange={handleChangeTaskStatus}
+              />
+            ))}
+          </div>
+        </DndContext>
+      </div>
     </div>
   );
 }
