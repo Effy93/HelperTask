@@ -42,6 +42,7 @@ router.delete("/api/projects/:id", verifyToken, projectController.destroy);
 
 router.post("/api/tasks", verifyToken, taskController.add);
 router.get("/api/tasks", verifyToken, taskController.browse);
+router.put("/api/tasks/order", verifyToken, taskController.reorder);
 router.get("/api/tasks/:id", verifyToken, taskController.read);
 router.put("/api/tasks/:id", verifyToken, taskController.edit);
 router.delete("/api/tasks/:id", verifyToken, taskController.destroy);

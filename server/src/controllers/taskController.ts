@@ -4,8 +4,56 @@ import type { ITask } from "../types/ITask";
 
 const browse: RequestHandler = async (req, res) => {
   try {
-    const tasks = await taskRepository.readAll();
+    const projectIdParam = req.query.project_id;
+    let projectId: number | undefined = undefined;
+
+    if (projectIdParam !== undefined) {
+      projectId = Number(projectIdParam);
+
+      if (Number.isNaN(projectId)) {
+        res.status(400).json({ message: "ID de projet invalide" });
+        return;
+      }
+    }
+
+    const tasks = await taskRepository.readAll(projectId);
     res.json(tasks);
+  } catch {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+const reorder: RequestHandler = async (req, res) => {
+  try {
+    const updates = req.body.tasks;
+
+    if (!Array.isArray(updates) || updates.length === 0) {
+      res.status(400).json({ message: "Aucune tâche à mettre à jour" });
+      return;
+    }
+
+    const sanitizedUpdates = updates.map((task: unknown) => {
+      if (typeof task !== "object" || task === null) {
+        throw new Error("Données de tâche invalides");
+      }
+
+      const { id, status, position } = task as Record<string, unknown>;
+
+      return {
+        id: Number(id),
+        status: status as ITask["status"],
+        position: Number(position),
+      };
+    });
+
+    const affectedRows = await taskRepository.updateMany(sanitizedUpdates);
+
+    if (affectedRows === 0) {
+      res.status(404).json({ message: "Aucune tâche mise à jour" });
+      return;
+    }
+
+    res.json({ message: "Ordre des tâches mis à jour" });
   } catch {
     res.status(500).json({ message: "Erreur serveur" });
   }
@@ -124,4 +172,4 @@ const destroy: RequestHandler = async (req, res) => {
   }
 };
 
-export default { browse, read, add, edit, destroy };
+export default { browse, read, add, edit, reorder, destroy };
