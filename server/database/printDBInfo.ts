@@ -82,19 +82,14 @@ export async function printDBInfo() {
     // 📦 AUTO TABLE DETECTION
     // =========================
 
-    const [tablesRows] = await client.query<RowDataPacket[]>(
-      "SHOW TABLES",
-    );
+    const [tablesRows] = await client.query<RowDataPacket[]>("SHOW TABLES");
 
-    const tables = tablesRows.map(
-      (row) => Object.values(row)[0] as string,
-    );
+    const tables = tablesRows.map((row) => Object.values(row)[0] as string);
 
     console.log(
       `\n${color.cyan}📦 Tables détectées (${tables.length})${color.reset}`,
     );
 
-     
     // =========================
     // 🔥 DISPLAY TABLES
     // =========================
@@ -107,15 +102,9 @@ export async function printDBInfo() {
       const isRelation = table.includes("_");
 
       const labelColor =
-        table === "user"
-          ? color.blue
-          : isRelation
-          ? color.purple
-          : color.blue;
+        table === "user" ? color.blue : isRelation ? color.purple : color.blue;
 
-      console.log(
-        `${labelColor}${tableIcon} ${table}${color.reset}`,
-      );
+      console.log(`${labelColor}${tableIcon} ${table}${color.reset}`);
 
       if (rows.length) {
         console.table(rows);
