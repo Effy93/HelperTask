@@ -3,7 +3,7 @@ FROM node:lts-alpine3.22
 WORKDIR /app
 
 COPY client/package*.json ./
-RUN npm i
+RUN npm install
 
 COPY client .
 

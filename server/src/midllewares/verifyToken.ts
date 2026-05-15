@@ -18,7 +18,7 @@ const verifyToken = async (
   try {
     const token = req.cookies.access_token;
 
-    console.log("COOKIES:", req.cookies);
+    // console.log("COOKIES:", req.cookies);
 
     if (!token) {
       res.status(401).json({ message: "Pas de token" });
