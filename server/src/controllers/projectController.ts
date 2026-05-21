@@ -43,24 +43,29 @@ const read: RequestHandler = async (req, res) => {
 
 const add: RequestHandler = async (req, res) => {
   try {
-    let { title, description, status, position } = req.body;
-
     const userId = (req as AuthRequest).user?.id;
-
-    if (!title) {
-      res.status(400).json({ message: "Titre requis" });
-      return;
-    }
+    const title = String(req.body.title ?? "").trim();
+    const description = String(req.body.description ?? "").trim();
+    const status = req.body.status || "todo";
+    const position = req.body.position ?? 0;
 
     if (!userId) {
       res.status(401).json({ message: "Non authentifié" });
       return;
     }
 
-    // valeurs par défaut
-    description = description?.trim() || "";
-    status = status || "todo";
-    position = position ?? 0;
+    if (!title) {
+      res.status(400).json({ message: "Titre requis" });
+      return;
+    }
+    if (title.length > 100) {
+      res.status(400).json({ message: "Titre trop long (100 caractères max)" });
+      return;
+    }
+    if (description.length > 255) {
+      res.status(400).json({ message: "Description trop longue (255 caractères max)" });
+      return;
+    }
 
     const insertId = await projectRepository.create(
       {
@@ -88,15 +93,26 @@ const add: RequestHandler = async (req, res) => {
 const edit: RequestHandler = async (req, res) => {
   try {
     const id = Number(req.params.id);
+    const userId = (req as AuthRequest).user?.id;
 
     if (Number.isNaN(id)) {
       res.status(400).json({ message: "ID invalide" });
       return;
     }
 
+    if (!userId) {
+      res.status(401).json({ message: "Non authentifié" });
+      return;
+    }
+
+    const owner = await projectRepository.isOwner(id, userId);
+    if (!owner) {
+      res.status(403).json({ message: "Accès interdit" });
+      return;
+    }
+
     const { title, description, status, position } = req.body;
 
-    // Règle logique métier : modification partiel mais si modification du titre, celui si doit être non vide et  non null
     if (title !== undefined && title.trim() === "") {
       res.status(400).json({ message: "Titre requis" });
       return;
@@ -123,9 +139,21 @@ const edit: RequestHandler = async (req, res) => {
 const destroy: RequestHandler = async (req, res) => {
   try {
     const id = Number(req.params.id);
+    const userId = (req as AuthRequest).user?.id;
 
     if (Number.isNaN(id)) {
       res.status(400).json({ message: "ID invalide" });
+      return;
+    }
+
+    if (!userId) {
+      res.status(401).json({ message: "Non authentifié" });
+      return;
+    }
+
+    const owner = await projectRepository.isOwner(id, userId);
+    if (!owner) {
+      res.status(403).json({ message: "Accès interdit" });
       return;
     }
 
@@ -142,4 +170,78 @@ const destroy: RequestHandler = async (req, res) => {
   }
 };
 
-export default { browse, read, add, edit, destroy };
+const getCollaborators: RequestHandler = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      res.status(400).json({ message: "ID invalide" });
+      return;
+    }
+    const collaborators = await projectRepository.getCollaborators(id);
+    res.json(collaborators);
+  } catch {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+const addCollaborator: RequestHandler = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const userId = (req as AuthRequest).user?.id;
+    const targetUserId = Number(req.body.user_id);
+
+    if (!userId) {
+      res.status(401).json({ message: "Non authentifié" });
+      return;
+    }
+    if (Number.isNaN(id) || Number.isNaN(targetUserId)) {
+      res.status(400).json({ message: "ID invalide" });
+      return;
+    }
+
+    const owner = await projectRepository.isOwner(id, userId);
+    if (!owner) {
+      res.status(403).json({ message: "Accès interdit" });
+      return;
+    }
+
+    await projectRepository.addCollaborator(id, targetUserId);
+    res.status(201).json({ message: "Collaborateur ajouté" });
+  } catch {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+const removeCollaborator: RequestHandler = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const userId = (req as AuthRequest).user?.id;
+    const targetUserId = Number(req.params.userId);
+
+    if (!userId) {
+      res.status(401).json({ message: "Non authentifié" });
+      return;
+    }
+    if (Number.isNaN(id) || Number.isNaN(targetUserId)) {
+      res.status(400).json({ message: "ID invalide" });
+      return;
+    }
+
+    const owner = await projectRepository.isOwner(id, userId);
+    if (!owner) {
+      res.status(403).json({ message: "Accès interdit" });
+      return;
+    }
+
+    const affected = await projectRepository.removeCollaborator(id, targetUserId);
+    if (affected === 0) {
+      res.status(404).json({ message: "Collaborateur introuvable" });
+      return;
+    }
+    res.json({ message: "Collaborateur retiré" });
+  } catch {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+export default { browse, read, add, edit, destroy, getCollaborators, addCollaborator, removeCollaborator };

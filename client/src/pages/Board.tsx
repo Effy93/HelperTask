@@ -11,6 +11,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 
 import type { ITask, TaskStatus } from "../../../server/src/types/ITask";
+
+const API = import.meta.env.VITE_API_URL as string;
 import btnRetour from "../assets/images/btn-retour_projets.png";
 import Column from "../components/profile/Column";
 import { useAuth } from "../context/AuthContext";
@@ -50,6 +52,7 @@ export default function Board() {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
+  const [newDeadline, setNewDeadline] = useState("");
   const [newCollaborator, setNewCollaborator] = useState("");
   const [taskStatus, setTaskStatus] = useState<TaskStatus>("todo");
   const [editingTask, setEditingTask] = useState<ITask | null>(null);
@@ -80,7 +83,7 @@ export default function Board() {
 
     try {
       const res = await fetch(
-        `http://localhost:3310/api/tasks?project_id=${projectId}`,
+        `${API}/api/tasks?project_id=${projectId}`,
         {
           credentials: "include",
         },
@@ -105,7 +108,7 @@ export default function Board() {
 
     const fetchProject = async () => {
       const res = await fetch(
-        `http://localhost:3310/api/projects/${projectId}`,
+        `${API}/api/projects/${projectId}`,
         {
           credentials: "include",
         },
@@ -126,7 +129,7 @@ export default function Board() {
   ) => {
     if (updates.length === 0) return;
 
-    await fetch("http://localhost:3310/api/tasks/order", {
+    await fetch(`${API}/api/tasks/order`, {
       method: "PUT",
       credentials: "include",
       headers: {
@@ -141,6 +144,7 @@ export default function Board() {
     setEditingTask(null);
     setNewTitle("");
     setNewContent("");
+    setNewDeadline("");
     setNewCollaborator("");
     setTaskStatus("todo");
   };
@@ -151,11 +155,13 @@ export default function Board() {
       setNewTitle(task.title);
       setNewContent(task.content);
       setTaskStatus(task.status);
+      setNewDeadline(task.deadline ? task.deadline.slice(0, 10) : "");
       setNewCollaborator("");
     } else {
       setEditingTask(null);
       setNewTitle("");
       setNewContent("");
+      setNewDeadline("");
       setTaskStatus("todo");
       setNewCollaborator("");
     }
@@ -175,6 +181,7 @@ export default function Board() {
         content: newContent,
         status: taskStatus,
         position: editingTask.position,
+        deadline: newDeadline || null,
       };
 
       let destinationItems: ITask[] = [];
@@ -185,7 +192,7 @@ export default function Board() {
       }
 
       const res = await fetch(
-        `http://localhost:3310/api/tasks/${editingTask.id}`,
+        `${API}/api/tasks/${editingTask.id}`,
         {
           method: "PUT",
           credentials: "include",
@@ -230,7 +237,7 @@ export default function Board() {
     } else {
       const nextPosition = groupedTasks.todo.length;
 
-      const res = await fetch("http://localhost:3310/api/tasks", {
+      const res = await fetch(`${API}/api/tasks`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -241,6 +248,7 @@ export default function Board() {
           content: newContent,
           status: taskStatus,
           position: nextPosition,
+          deadline: newDeadline || null,
           project_id: projectId,
         }),
       });
@@ -267,7 +275,7 @@ export default function Board() {
       project_id: task.project_id,
     };
 
-    const res = await fetch(`http://localhost:3310/api/tasks/${taskId}`, {
+    const res = await fetch(`${API}/api/tasks/${taskId}`, {
       method: "PUT",
       credentials: "include",
       headers: {
@@ -321,7 +329,7 @@ export default function Board() {
   const handleDeleteTask = async (taskId: number) => {
     if (!confirm("Supprimer cette tâche ?")) return;
 
-    const res = await fetch(`http://localhost:3310/api/tasks/${taskId}`, {
+    const res = await fetch(`${API}/api/tasks/${taskId}`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -452,7 +460,11 @@ export default function Board() {
       </div>
 
       <div className="board-layout">
-        <aside className={`task-drawer ${showTaskPanel ? "open" : ""}`}>
+        <aside
+          className={`task-drawer ${showTaskPanel ? "open" : ""}`}
+          aria-expanded={showTaskPanel}
+          aria-label="Panneau de tâche"
+        >
           <div className="drawer-header">
             <div>
               <h2>{editingTask ? "Modifier la tâche" : "Nouvelle tâche"}</h2>
@@ -484,6 +496,14 @@ export default function Board() {
                 placeholder="Description (facultatif)"
                 value={newContent}
                 onChange={(event) => setNewContent(event.target.value)}
+              />
+            </label>
+            <label>
+              Deadline
+              <input
+                type="date"
+                value={newDeadline}
+                onChange={(event) => setNewDeadline(event.target.value)}
               />
             </label>
             <label>

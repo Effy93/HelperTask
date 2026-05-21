@@ -24,6 +24,7 @@ router.get("/api/users", userController.browse);
 /* ************************************************************************* */
 
 router.post("/api/login", authController.login);
+router.post("/api/logout", authController.logout);
 router.get("/api/me", verifyToken, authController.me);
 
 /* ************************************************************************* */
@@ -35,6 +36,9 @@ router.get("/api/projects", verifyToken, projectController.browse);
 router.get("/api/projects/:id", verifyToken, projectController.read);
 router.put("/api/projects/:id", verifyToken, projectController.edit);
 router.delete("/api/projects/:id", verifyToken, projectController.destroy);
+router.get("/api/projects/:id/collaborators", verifyToken, projectController.getCollaborators);
+router.post("/api/projects/:id/collaborators", verifyToken, projectController.addCollaborator);
+router.delete("/api/projects/:id/collaborators/:userId", verifyToken, projectController.removeCollaborator);
 
 /* ************************************************************************* */
 // TASK (déjà OK)
@@ -46,6 +50,9 @@ router.put("/api/tasks/order", verifyToken, taskController.reorder);
 router.get("/api/tasks/:id", verifyToken, taskController.read);
 router.put("/api/tasks/:id", verifyToken, taskController.edit);
 router.delete("/api/tasks/:id", verifyToken, taskController.destroy);
+router.get("/api/tasks/:id/assignees", verifyToken, taskController.getAssignees);
+router.post("/api/tasks/:id/assignees", verifyToken, taskController.assignUser);
+router.delete("/api/tasks/:id/assignees/:userId", verifyToken, taskController.unassignUser);
 
 /* ************************************************************************* */
 

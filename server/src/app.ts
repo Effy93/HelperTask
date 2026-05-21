@@ -2,10 +2,22 @@
 
 import cookieParser from "cookie-parser";
 import express from "express";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 
 const app = express();
 
+app.use(helmet());
 app.use(cookieParser());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Trop de requêtes, réessayez plus tard." },
+});
+app.use("/api/", limiter);
 
 // Configure it
 
@@ -28,14 +40,16 @@ import cors from "cors";
 
 // }
 
-if (process.env.CLIENT_URL) {
-  app.use(
-    cors({
-      origin: process.env.CLIENT_URL,
-      credentials: true, // nécessaire pour fetch avec cookie
-    }),
-  );
+const allowedOrigin = process.env.CLIENT_URL;
+if (!allowedOrigin) {
+  console.warn("⚠️  CLIENT_URL non défini — CORS bloqué pour toutes les origines");
 }
+app.use(
+  cors({
+    origin: allowedOrigin ?? false,
+    credentials: true,
+  }),
+);
 
 // If you need to allow extra origins, you can add something like this:
 

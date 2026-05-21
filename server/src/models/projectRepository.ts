@@ -73,6 +73,40 @@ export class ProjectRepository {
   //   return result.affectedRows;
   // }
 
+  async getCollaborators(projectId: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      `SELECT u.id, u.name, u.email, pu.role
+       FROM user u
+       JOIN project_user pu ON u.id = pu.user_id
+       WHERE pu.project_id = ?`,
+      [projectId],
+    );
+    return rows;
+  }
+
+  async addCollaborator(projectId: number, userId: number, role = "collaborator") {
+    await databaseClient.query(
+      "INSERT IGNORE INTO project_user (project_id, user_id, role) VALUES (?, ?, ?)",
+      [projectId, userId, role],
+    );
+  }
+
+  async removeCollaborator(projectId: number, userId: number) {
+    const [result] = await databaseClient.query<Result>(
+      "DELETE FROM project_user WHERE project_id = ? AND user_id = ? AND role != 'product_owner'",
+      [projectId, userId],
+    );
+    return result.affectedRows;
+  }
+
+  async isOwner(projectId: number, userId: number): Promise<boolean> {
+    const [rows] = await databaseClient.query<Rows>(
+      "SELECT 1 FROM project_user WHERE project_id = ? AND user_id = ? AND role = 'product_owner'",
+      [projectId, userId],
+    );
+    return rows.length > 0;
+  }
+
   async delete(id: number) {
     const [result] = await databaseClient.query<Result>(
       "DELETE FROM project WHERE id_project = ?",

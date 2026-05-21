@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./header.css";
 
+const API = import.meta.env.VITE_API_URL as string;
+
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { user, setUser } = useAuth();
@@ -24,7 +26,7 @@ export default function Header() {
   }, []);
 
   const handleLogout = async () => {
-    await fetch("http://localhost:3310/api/logout", {
+    await fetch(`${API}/api/logout`, {
       method: "POST",
       credentials: "include",
     });

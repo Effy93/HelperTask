@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+
+const API = import.meta.env.VITE_API_URL as string;
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../styles/profile.css";
@@ -35,7 +37,7 @@ export default function Profile() {
   }, []);
 
   const fetchProjects = async () => {
-    const res = await fetch("http://localhost:3310/api/projects", {
+    const res = await fetch(`${API}/api/projects`, {
       credentials: "include",
     });
     const data = await res.json();
@@ -54,7 +56,7 @@ export default function Profile() {
       alert("Titre requis");
       return;
     }
-    const res = await fetch("http://localhost:3310/api/projects", {
+    const res = await fetch(`${API}/api/projects`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -70,7 +72,7 @@ export default function Profile() {
   };
 
   const updateProject = async (id: number) => {
-    const res = await fetch(`http://localhost:3310/api/projects/${id}`, {
+    const res = await fetch(`${API}/api/projects/${id}`, {
       method: "PUT",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -86,7 +88,7 @@ export default function Profile() {
 
   const deleteProject = async (id: number) => {
     if (!confirm("Supprimer ce projet ?")) return;
-    const res = await fetch(`http://localhost:3310/api/projects/${id}`, {
+    const res = await fetch(`${API}/api/projects/${id}`, {
       method: "DELETE",
       credentials: "include",
     });
@@ -107,7 +109,9 @@ export default function Profile() {
         <h2 className="panel-title">Créer un projet</h2>
 
         <div className="input-field">
+          <label htmlFor="project-title" className="sr-only">Nom du projet</label>
           <input
+            id="project-title"
             ref={titleInputRef}
             type="text"
             placeholder="Nom du projet"
@@ -119,7 +123,9 @@ export default function Profile() {
         </div>
 
         <div className="input-field">
+          <label htmlFor="project-description" className="sr-only">Description</label>
           <textarea
+            id="project-description"
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}

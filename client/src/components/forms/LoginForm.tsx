@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./form.css";
 
+const API = import.meta.env.VITE_API_URL as string;
+
 export default function LoginForm() {
   const { setUser } = useAuth();
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ export default function LoginForm() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:3310/api/login", {
+      const res = await fetch(`${API}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -29,7 +31,7 @@ export default function LoginForm() {
       }
 
       // 🔥 récupérer le user
-      const meRes = await fetch("http://localhost:3310/api/me", {
+      const meRes = await fetch(`${API}/api/me`, {
         credentials: "include",
       });
 
@@ -70,7 +72,7 @@ export default function LoginForm() {
           <label htmlFor="password">Mot de passe</label>
         </div>
 
-        <button type="submit">Se connecter</button>
+        <button type="submit" className="btn-animated"><span>Se connecter</span></button>
 
         <p style={{ marginTop: "1rem" }}>
           Pas de compte ? <Link to="/register">S’inscrire</Link>

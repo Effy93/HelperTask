@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import "./form.css";
 import type { IUser } from "../../../../server/src/types/IUser";
 
+const API = import.meta.env.VITE_API_URL as string;
+
 interface FormProps {
   setUser?: (user: IUser | null) => void;
 }
@@ -33,7 +35,7 @@ export default function RegisterForm({ setUser }: FormProps) {
     }
 
     try {
-      const res = await fetch("http://localhost:3310/api/users", {
+      const res = await fetch(`${API}/api/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
@@ -106,7 +108,7 @@ export default function RegisterForm({ setUser }: FormProps) {
           <label htmlFor="confirmPassword">Confirmer le mot de passe</label>
         </div>
 
-        <button type="submit">S'inscrire</button>
+        <button type="submit" className="btn-animated"><span>S'inscrire</span></button>
         <p style={{ marginTop: "1rem" }}>
           Déjà un compte ? <Link to="/login">Se connecter</Link>
         </p>

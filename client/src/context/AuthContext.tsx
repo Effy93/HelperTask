@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { IUser } from "../../../server/src/types/IUser";
 
+const API = import.meta.env.VITE_API_URL as string;
+
 type AuthType = {
   user: IUser | null;
   setUser: (user: IUser | null) => void;
@@ -16,7 +18,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const res = await fetch("http://localhost:3310/api/me", {
+        const res = await fetch(`${API}/api/me`, {
           credentials: "include",
         });
 

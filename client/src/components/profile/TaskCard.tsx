@@ -105,6 +105,11 @@ export default function TaskCard({
               <strong>{task.title}</strong>
             </div>
             {task.content && <p>{task.content}</p>}
+            {task.deadline && (
+              <p className="task-card-deadline">
+                {new Date(task.deadline).toLocaleDateString("fr-FR")}
+              </p>
+            )}
           </>
         )}
       </div>

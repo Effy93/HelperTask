@@ -14,7 +14,8 @@ const login = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { email, password } = req.body;
+    const email = String(req.body.email ?? "").trim().toLowerCase();
+    const password = String(req.body.password ?? "");
 
     if (!email || !password) {
       res.status(400).json({ message: "Identifiants requis" });
@@ -36,17 +37,24 @@ const login = async (
       return;
     }
 
-    // Génération du token
+    const secret = process.env.SECRET_KEY;
+    if (!secret) {
+      res.status(500).json({ message: "Configuration serveur invalide" });
+      return;
+    }
+
     const token = jwt.sign(
       { user_id: user.id, user_email: user.email, role: "user" },
-      process.env.SECRET_KEY || "defaultsecret123!",
+      secret,
       { expiresIn: "8h" },
     );
 
-    // Stockage dans le cookie
+    const isProd = process.env.NODE_ENV === "production";
     res.cookie("access_token", token, {
       httpOnly: true,
-      expires: new Date(Date.now() + 8 * 3600000), // 8h
+      sameSite: "lax",
+      secure: isProd,
+      expires: new Date(Date.now() + 8 * 3600000),
     });
 
     res.status(200).json({ message: "Connexion réussie" });
@@ -73,10 +81,11 @@ const me = (req: AuthRequest, res: Response): void => {
 
 const logout = (req: Request, res: Response, next: NextFunction): void => {
   try {
+    const isProd = process.env.NODE_ENV === "production";
     res.clearCookie("access_token", {
       httpOnly: true,
       sameSite: "lax",
-      secure: false, // true en production HTTPS
+      secure: isProd,
     });
 
     res.status(200).json({ message: "Déconnexion réussie" });

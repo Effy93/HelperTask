@@ -95,6 +95,32 @@ export class TaskRepository {
 
     return result.affectedRows;
   }
+
+  async getAssignees(taskId: number) {
+    const [rows] = await databaseClient.query<Rows>(
+      `SELECT u.id, u.name, u.email
+       FROM user u
+       JOIN user_task ut ON u.id = ut.user_id
+       WHERE ut.task_id = ?`,
+      [taskId],
+    );
+    return rows;
+  }
+
+  async assignUser(taskId: number, userId: number) {
+    await databaseClient.query(
+      "INSERT IGNORE INTO user_task (task_id, user_id) VALUES (?, ?)",
+      [taskId, userId],
+    );
+  }
+
+  async unassignUser(taskId: number, userId: number) {
+    const [result] = await databaseClient.query<Result>(
+      "DELETE FROM user_task WHERE task_id = ? AND user_id = ?",
+      [taskId, userId],
+    );
+    return result.affectedRows;
+  }
 }
 
 export default new TaskRepository();

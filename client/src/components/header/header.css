@@ -12,9 +12,10 @@
   transition: all 0.3s ease;
   /* background: rgba(243, 237, 247, 0.283); */
   border-bottom: 1px solid rgba(252, 119, 83, 0.35);
-  background: rgba(255, 249, 245, 0.62);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 249, 245, 0.48);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 2px 20px rgba(252, 119, 83, 0.08);
   padding: 0.6rem 2rem;
 }
 

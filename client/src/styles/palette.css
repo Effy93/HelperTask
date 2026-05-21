@@ -54,4 +54,23 @@
 
   --color-text: #2e2e2e;
   --color-text-secondary: #6f6f6f;
+
+  /* ========================= */
+  /* Boutons — animation       */
+  /* ========================= */
+
+  --btn-radius-pill: 50px;
+  --btn-radius-card: 14px;
+  --btn-radius-icon: 12px;
+
+  --btn-transition:       background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  --btn-transition-bg:    background 0.2s ease, transform 0.2s ease;
+  --btn-transition-color: background 0.2s ease, color 0.2s ease;
+
+  --btn-lift:    translateY(-2px);
+  --btn-lift-sm: translateY(-1px);
+  --btn-press:   translateY(1px);
+
+  --btn-shadow:    0 5px 15px rgba(252, 119, 83, 0.4);
+  --btn-shadow-sm: 0 4px 12px rgba(252, 119, 83, 0.35);
 }

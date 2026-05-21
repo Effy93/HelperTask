@@ -1,4 +1,4 @@
-export type ProjectStatus = "todo" | "in_progress" | "done";
+export type ProjectStatus = "todo" | "doing" | "done";
 
 export interface IProject {
   id: number;

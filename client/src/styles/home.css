@@ -38,15 +38,18 @@
   background: var(--color-primary);
   color: white;
   text-decoration: none;
-  border-radius: 50px;
+  border-radius: var(--btn-radius-pill);
   font-weight: 600;
+  transition: var(--btn-transition);
 }
 
 .home-btn:hover {
   background: var(--color-accent);
-  box-shadow: 0 5px 15px rgba(252, 119, 83, 0.4);
+  box-shadow: var(--btn-shadow);
+  transform: var(--btn-lift);
 }
 
 .home-btn:active {
-  transform: translateY(0);
+  transform: var(--btn-press);
+  box-shadow: none;
 }

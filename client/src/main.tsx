@@ -8,8 +8,8 @@ import "./styles/palette.css";
 
 import App from "./App";
 import ProtectedRoute from "./components/ProtectedRoute";
-import LoginForm from "./components/forms/LoginForm";
-import RegisterForm from "./components/forms/RegisterForm";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 
 import Board from "./pages/Board";
 import Home from "./pages/Home";
@@ -22,8 +22,8 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
 
-      { path: "login", element: <LoginForm /> },
-      { path: "register", element: <RegisterForm /> },
+      { path: "login", element: <LoginPage /> },
+      { path: "register", element: <RegisterPage /> },
 
       {
         element: <ProtectedRoute />,
