@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useState } from "react";
-import { FiCheck, FiChevronDown, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
+import { FiCheck, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
 import type { ITask, TaskStatus } from "../../../../server/src/types/ITask";
 
 type Props = {
@@ -19,10 +19,16 @@ export default function TaskCard({
   onStatusChange,
   isOverlay = false,
 }: Props) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({
-      id: task.id.toString(),
-    });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: task.id.toString(),
+  });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -32,7 +38,6 @@ export default function TaskCard({
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
   const [editContent, setEditContent] = useState(task.content);
-  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
 
   useEffect(() => {
     setEditTitle(task.title);
@@ -50,10 +55,6 @@ export default function TaskCard({
     { status: "doing" as TaskStatus, label: "En cours" },
     { status: "done" as TaskStatus, label: "Terminé" },
   ];
-
-  const currentStatus = statusOptions.find(
-    (option) => option.status === task.status,
-  );
 
   return (
     <div
@@ -117,31 +118,17 @@ export default function TaskCard({
       </div>
 
       <div className="task-card-footer">
-        <div className="task-card-status">
-          <div
-            className="status-picker"
-            onMouseLeave={() => setStatusMenuOpen(false)}
-          >
-            <button
-              type="button"
-              className="status-toggle"
-              onClick={(event) => {
-                event.stopPropagation();
-                setStatusMenuOpen((current) => !current);
-              }}
-              title={currentStatus?.label}
-            >
-              <FiChevronDown />
-            </button>
-            <div className={`status-menu ${statusMenuOpen ? "open" : ""}`}>
+        <div className="task-card-hint" aria-hidden="true" />
+        <div className="task-card-footer-row">
+          <div className="task-card-status">
+            <div className="status-segment">
               {statusOptions.map((option) => (
                 <button
                   key={option.status}
                   type="button"
-                  className={`status-item ${task.status === option.status ? "active" : ""}`}
+                  className={`status-seg-btn status-seg-btn--${option.status}${task.status === option.status ? " active" : ""}`}
                   onClick={(event) => {
                     event.stopPropagation();
-                    setStatusMenuOpen(false);
                     onStatusChange?.(task.id, option.status);
                   }}
                 >
@@ -150,36 +137,36 @@ export default function TaskCard({
               ))}
             </div>
           </div>
-        </div>
 
-        <div className="task-card-actions">
-          {!isEditing && (
-            <button
-              type="button"
-              className="task-card-edit"
-              onClick={(event) => {
-                event.stopPropagation();
-                setIsEditing(true);
-              }}
-              aria-label="Modifier la tâche"
-            >
-              <FiEdit2 />
-            </button>
-          )}
+          <div className="task-card-actions">
+            {!isEditing && (
+              <button
+                type="button"
+                className="task-card-edit"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setIsEditing(true);
+                }}
+                aria-label="Modifier la tâche"
+              >
+                <FiEdit2 />
+              </button>
+            )}
 
-          {onDelete && (
-            <button
-              type="button"
-              className="task-card-delete"
-              onClick={(event) => {
-                event.stopPropagation();
-                onDelete(task.id);
-              }}
-              aria-label="Supprimer la tâche"
-            >
-              <FiTrash2 />
-            </button>
-          )}
+            {onDelete && (
+              <button
+                type="button"
+                className="task-card-delete"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onDelete(task.id);
+                }}
+                aria-label="Supprimer la tâche"
+              >
+                <FiTrash2 />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import {
   DndContext,
-  DragOverlay,
   type DragEndEvent,
+  DragOverlay,
   type DragStartEvent,
   PointerSensor,
   closestCenter,
@@ -514,9 +514,7 @@ export default function Board() {
             ))}
           </div>
           <DragOverlay>
-            {activeTask ? (
-              <TaskCard task={activeTask} isOverlay />
-            ) : null}
+            {activeTask ? <TaskCard task={activeTask} isOverlay /> : null}
           </DragOverlay>
         </DndContext>
 

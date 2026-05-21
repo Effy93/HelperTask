@@ -14,7 +14,7 @@
   backdrop-filter: var(--glass-l1-blur);
   -webkit-backdrop-filter: var(--glass-l1-blur);
   border: 1px solid var(--glass-l1-border);
-  box-shadow: 0 10px 40px rgba(252, 119, 83, 0.10);
+  box-shadow: 0 10px 40px rgba(252, 119, 83, 0.1);
   border-radius: 24px;
 }
 
