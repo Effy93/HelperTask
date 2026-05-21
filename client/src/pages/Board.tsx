@@ -10,16 +10,39 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { FiCalendar, FiUser, FiUsers } from "react-icons/fi";
 import { Link, Navigate, useParams } from "react-router-dom";
 
 import type { ITask, TaskStatus } from "../../../server/src/types/ITask";
 
 const API = import.meta.env.VITE_API_URL as string;
+import logoAddCollab from "../assets/images/btn-addCollab.png";
 import btnRetour from "../assets/images/btn-retour_projets.png";
+import InviteCollaboratorModal from "../components/InviteCollaboratorModal";
 import Column from "../components/profile/Column";
+import type { Assignee } from "../components/profile/Column";
 import TaskCard from "../components/profile/TaskCard";
 import { useAuth } from "../context/AuthContext";
 import "../styles/profile.css";
+
+const AVATAR_COLORS = [
+  "#fc7753",
+  "#3498db",
+  "#368d28",
+  "#9b59b6",
+  "#f39c12",
+  "#e74c3c",
+  "#1abc9c",
+  "#fba875",
+];
+const getAvatarColor = (id: number) => AVATAR_COLORS[id % AVATAR_COLORS.length];
+const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
 const projectStatusList: TaskStatus[] = ["todo", "doing", "done"];
 
@@ -60,16 +83,20 @@ export default function Board() {
 
   const [project, setProject] = useState<Project | null>(null);
   const [tasks, setTasks] = useState<ITask[]>([]);
+  const [taskAssignees, setTaskAssignees] = useState<
+    Record<number, Assignee[]>
+  >({});
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [newDeadline, setNewDeadline] = useState("");
-  const [selectedAssigneeId, setSelectedAssigneeId] = useState<number | "">("");
+  const [panelAssignees, setPanelAssignees] = useState<number[]>([]);
   const [taskStatus, setTaskStatus] = useState<TaskStatus>("todo");
   const [editingTask, setEditingTask] = useState<ITask | null>(null);
   const [showTaskPanel, setShowTaskPanel] = useState(false);
   const [loadingTasks, setLoadingTasks] = useState(true);
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [activeTask, setActiveTask] = useState<ITask | null>(null);
+  const [showInviteModal, setShowInviteModal] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -104,9 +131,33 @@ export default function Board() {
       }
 
       const data = await res.json();
-      setTasks(Array.isArray(data) ? data.map(normalizeTask) : []);
+      const loaded: ITask[] = Array.isArray(data)
+        ? data.map(normalizeTask)
+        : [];
+      setTasks(loaded);
+
+      const assigneeResults = await Promise.all(
+        loaded.map(async (task) => {
+          const r = await fetch(`${API}/api/tasks/${task.id}/assignees`, {
+            credentials: "include",
+          });
+          if (!r.ok) return { taskId: task.id, assignees: [] as Assignee[] };
+          const a = await r.json();
+          return {
+            taskId: task.id,
+            assignees: Array.isArray(a) ? (a as Assignee[]) : [],
+          };
+        }),
+      );
+
+      const assigneesMap: Record<number, Assignee[]> = {};
+      for (const { taskId, assignees } of assigneeResults) {
+        assigneesMap[taskId] = assignees;
+      }
+      setTaskAssignees(assigneesMap);
     } catch {
       setTasks([]);
+      setTaskAssignees({});
     } finally {
       setLoadingTasks(false);
     }
@@ -156,13 +207,24 @@ export default function Board() {
     });
   };
 
+  const closeInviteModal = () => setShowInviteModal(false);
+
+  const refreshCollaborators = async () => {
+    const res = await fetch(`${API}/api/projects/${projectId}/collaborators`, {
+      credentials: "include",
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    setCollaborators(Array.isArray(data) ? data : []);
+  };
+
   const closeTaskPanel = () => {
     setShowTaskPanel(false);
     setEditingTask(null);
     setNewTitle("");
     setNewContent("");
     setNewDeadline("");
-    setSelectedAssigneeId("");
+    setPanelAssignees([]);
     setTaskStatus("todo");
   };
 
@@ -173,14 +235,15 @@ export default function Board() {
       setNewContent(task.content);
       setTaskStatus(task.status);
       setNewDeadline(task.deadline ? task.deadline.slice(0, 10) : "");
+      setPanelAssignees((taskAssignees[task.id] ?? []).map((a) => a.id));
     } else {
       setEditingTask(null);
       setNewTitle("");
       setNewContent("");
       setNewDeadline("");
       setTaskStatus("todo");
+      setPanelAssignees([]);
     }
-    setSelectedAssigneeId("");
     setShowTaskPanel(true);
   };
 
@@ -219,6 +282,29 @@ export default function Board() {
         alert("Impossible de modifier la tâche");
         return;
       }
+
+      const originalIds = (taskAssignees[editingTask.id] ?? []).map(
+        (a) => a.id,
+      );
+      const toAdd = panelAssignees.filter((id) => !originalIds.includes(id));
+      const toRemove = originalIds.filter((id) => !panelAssignees.includes(id));
+
+      await Promise.all([
+        ...toAdd.map((uid) =>
+          fetch(`${API}/api/tasks/${editingTask.id}/assignees`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_id: uid }),
+          }),
+        ),
+        ...toRemove.map((uid) =>
+          fetch(`${API}/api/tasks/${editingTask.id}/assignees/${uid}`, {
+            method: "DELETE",
+            credentials: "include",
+          }),
+        ),
+      ]);
 
       if (editingTask.status !== taskStatus) {
         const sourceItems = buildOrderedColumn(editingTask.status).filter(
@@ -270,14 +356,18 @@ export default function Board() {
         return;
       }
 
-      if (selectedAssigneeId !== "") {
+      if (panelAssignees.length > 0) {
         const { id: newTaskId } = await res.json();
-        await fetch(`${API}/api/tasks/${newTaskId}/assignees`, {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: selectedAssigneeId }),
-        });
+        await Promise.all(
+          panelAssignees.map((uid) =>
+            fetch(`${API}/api/tasks/${newTaskId}/assignees`, {
+              method: "POST",
+              credentials: "include",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ user_id: uid }),
+            }),
+          ),
+        );
       }
     }
 
@@ -468,6 +558,16 @@ export default function Board() {
   if (!user) return <Navigate to="/login" />;
   if (Number.isNaN(projectId) || !project) return <p>Projet introuvable.</p>;
 
+  const po = collaborators.find((c) => c.role === "product_owner");
+  const colabs = collaborators.filter((c) => c.role === "collaborator");
+  // false seulement quand on sait avec certitude que l'utilisateur n'est pas PO
+  const isOwner =
+    collaborators.length === 0 ||
+    (user !== null &&
+      collaborators.some(
+        (c) => c.id === user.id && c.role === "product_owner",
+      ));
+
   return (
     <div className="board-page">
       <div className="profile-hero">
@@ -476,7 +576,23 @@ export default function Board() {
         </Link>
         <div className="hero-center">
           <h1>{project.title}</h1>
-          <p>{project.description}</p>
+          {project.description && <p>{project.description}</p>}
+          {collaborators.length > 0 && (
+            <div className="hero-meta">
+              {po && (
+                <span className="hero-meta-item">
+                  <FiUser className="hero-meta-icon" />
+                  <strong>PO</strong>&nbsp;{po.name}
+                </span>
+              )}
+              {colabs.length > 0 && (
+                <span className="hero-meta-item">
+                  <FiUsers className="hero-meta-icon" />
+                  {colabs.map((c) => c.name).join(" · ")}
+                </span>
+              )}
+            </div>
+          )}
         </div>
         <button
           type="button"
@@ -507,6 +623,7 @@ export default function Board() {
                       : "Terminé"
                 }
                 tasks={buildOrderedColumn(status)}
+                taskAssignees={taskAssignees}
                 onDelete={handleDeleteTask}
                 onUpdate={handleUpdateTask}
                 onStatusChange={handleChangeTaskStatus}
@@ -514,7 +631,13 @@ export default function Board() {
             ))}
           </div>
           <DragOverlay>
-            {activeTask ? <TaskCard task={activeTask} isOverlay /> : null}
+            {activeTask ? (
+              <TaskCard
+                task={activeTask}
+                assignees={taskAssignees[activeTask.id] ?? []}
+                isOverlay
+              />
+            ) : null}
           </DragOverlay>
         </DndContext>
 
@@ -569,24 +692,59 @@ export default function Board() {
                 <option value="done">Terminé</option>
               </select>
             </label>
-            <label>
-              Assigné
-              <select
-                value={selectedAssigneeId}
-                onChange={(event) =>
-                  setSelectedAssigneeId(
-                    event.target.value ? Number(event.target.value) : "",
-                  )
-                }
-              >
-                <option value="">Nommer un collaborateur</option>
-                {collaborators.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div className="drawer-field">
+              <span className="drawer-field-label">Assignés</span>
+              {panelAssignees.length > 0 && (
+                <div className="assignee-pills">
+                  {panelAssignees.map((uid) => {
+                    const collab = collaborators.find((c) => c.id === uid);
+                    if (!collab) return null;
+                    return (
+                      <span key={uid} className="assignee-pill">
+                        <span
+                          className="avatar-circle assignee-pill-avatar"
+                          style={{ background: getAvatarColor(uid) }}
+                        >
+                          {getInitials(collab.name)}
+                        </span>
+                        {collab.name}
+                        <button
+                          type="button"
+                          className="assignee-pill-remove"
+                          onClick={() =>
+                            setPanelAssignees((prev) =>
+                              prev.filter((id) => id !== uid),
+                            )
+                          }
+                          aria-label={`Retirer ${collab.name}`}
+                        >
+                          ×
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+              {collaborators.filter((c) => !panelAssignees.includes(c.id))
+                .length > 0 && (
+                <select
+                  value=""
+                  onChange={(event) => {
+                    const id = Number(event.target.value);
+                    if (id) setPanelAssignees((prev) => [...prev, id]);
+                  }}
+                >
+                  <option value="">+ Ajouter un collaborateur</option>
+                  {collaborators
+                    .filter((c) => !panelAssignees.includes(c.id))
+                    .map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                </select>
+              )}
+            </div>
             <label>
               Deadline
               <input
@@ -614,6 +772,75 @@ export default function Board() {
           </div>
         </aside>
       </div>
+
+      <section className="board-info">
+        <div className="sidebar-section">
+          <h3 className="sidebar-title">Légende</h3>
+          <div className="sidebar-legend">
+            <div className="legend-item">
+              <span className="legend-dot legend-dot--todo" />
+              <span>À faire</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-dot legend-dot--doing" />
+              <span>En cours</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-dot legend-dot--done" />
+              <span>Terminé</span>
+            </div>
+            <div className="legend-item">
+              <FiCalendar className="legend-icon" />
+              <span>Deadline</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="sidebar-section">
+          <h3 className="sidebar-title">Collaborateurs</h3>
+          <div className="sidebar-collabs">
+            {collaborators.map((c) => (
+              <div key={c.id} className="sidebar-collab">
+                <span
+                  className="avatar-circle avatar-circle--md"
+                  style={{ background: getAvatarColor(c.id) }}
+                >
+                  {getInitials(c.name)}
+                </span>
+                <span className="sidebar-collab-info">
+                  <span className="sidebar-collab-name">{c.name}</span>
+                  {c.role === "product_owner" && (
+                    <span className="badge-po">PO</span>
+                  )}
+                </span>
+              </div>
+            ))}
+            {isOwner && (
+              <div className="sidebar-collab">
+                <button
+                  type="button"
+                  className="add-collab-btn add-collab-btn--md"
+                  onClick={() => setShowInviteModal(true)}
+                  title="Inviter un collaborateur"
+                >
+                  <img src={logoAddCollab} alt="Inviter un collaborateur" />
+                </button>
+                <span className="sidebar-collab-name add-collab-label">
+                  Inviter un collaborateur
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {showInviteModal && (
+        <InviteCollaboratorModal
+          projectId={projectId}
+          onClose={closeInviteModal}
+          onSuccess={refreshCollaborators}
+        />
+      )}
     </div>
   );
 }

@@ -1,11 +1,36 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useState } from "react";
-import { FiCheck, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
+import { FiCalendar, FiCheck, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
 import type { ITask, TaskStatus } from "../../../../server/src/types/ITask";
+import type { Assignee } from "./Column";
+
+const AVATAR_COLORS = [
+  "#fc7753",
+  "#3498db",
+  "#368d28",
+  "#9b59b6",
+  "#f39c12",
+  "#e74c3c",
+  "#1abc9c",
+  "#fba875",
+];
+
+const getAvatarColor = (id: number) => AVATAR_COLORS[id % AVATAR_COLORS.length];
+
+const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+const MAX_VISIBLE_AVATARS = 3;
 
 type Props = {
   task: ITask;
+  assignees?: Assignee[];
   onDelete?: (taskId: number) => void;
   onUpdate?: (taskId: number, updates: Partial<ITask>) => void;
   onStatusChange?: (taskId: number, status: TaskStatus) => void;
@@ -14,6 +39,7 @@ type Props = {
 
 export default function TaskCard({
   task,
+  assignees = [],
   onDelete,
   onUpdate,
   onStatusChange,
@@ -55,6 +81,9 @@ export default function TaskCard({
     { status: "doing" as TaskStatus, label: "En cours" },
     { status: "done" as TaskStatus, label: "Terminé" },
   ];
+
+  const visibleAssignees = assignees.slice(0, MAX_VISIBLE_AVATARS);
+  const overflow = assignees.length - MAX_VISIBLE_AVATARS;
 
   return (
     <div
@@ -108,11 +137,35 @@ export default function TaskCard({
               <strong>{task.title}</strong>
             </div>
             {task.content && <p>{task.content}</p>}
-            {task.deadline && (
-              <p className="task-card-deadline">
-                {new Date(task.deadline).toLocaleDateString("fr-FR")}
-              </p>
-            )}
+
+            <div className="task-card-meta">
+              {assignees.length > 0 && (
+                <div className="avatar-stack">
+                  {visibleAssignees.map((a) => (
+                    <span
+                      key={a.id}
+                      className="avatar-circle"
+                      style={{ background: getAvatarColor(a.id) }}
+                      title={a.name}
+                    >
+                      {getInitials(a.name)}
+                    </span>
+                  ))}
+                  {overflow > 0 && (
+                    <span className="avatar-circle avatar-overflow">
+                      +{overflow}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {task.deadline && (
+                <span className="task-card-deadline">
+                  <FiCalendar className="deadline-icon" />
+                  {new Date(task.deadline).toLocaleDateString("fr-FR")}
+                </span>
+              )}
+            </div>
           </>
         )}
       </div>

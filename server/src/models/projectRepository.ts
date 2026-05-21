@@ -1,5 +1,7 @@
+import type { RowDataPacket } from "mysql2/promise";
 import databaseClient from "../../database/client";
 import type { Result, Rows } from "../../database/client";
+import type { ICollaborator } from "../types/ICollaborator";
 import type { IProject } from "../types/IProject";
 
 export class ProjectRepository {
@@ -73,8 +75,10 @@ export class ProjectRepository {
   //   return result.affectedRows;
   // }
 
-  async getCollaborators(projectId: number) {
-    const [rows] = await databaseClient.query<Rows>(
+  async getCollaborators(projectId: number): Promise<ICollaborator[]> {
+    const [rows] = await databaseClient.query<
+      (RowDataPacket & ICollaborator)[]
+    >(
       `SELECT u.id, u.name, u.email, pu.role
        FROM user u
        JOIN project_user pu ON u.id = pu.user_id

@@ -6,22 +6,51 @@ import { useAuth } from "../context/AuthContext";
 import "../styles/profile.css";
 
 import { FiCheck, FiEdit2, FiFolder, FiTrash2, FiX } from "react-icons/fi";
+import logoAddCollab from "../assets/images/btn-addCollab.png";
+import InviteCollaboratorModal from "../components/InviteCollaboratorModal";
+
+const AVATAR_COLORS = [
+  "#fc7753",
+  "#3498db",
+  "#368d28",
+  "#9b59b6",
+  "#f39c12",
+  "#e74c3c",
+  "#1abc9c",
+  "#fba875",
+];
+const getAvatarColor = (id: number) => AVATAR_COLORS[id % AVATAR_COLORS.length];
+const getInitials = (name: string) =>
+  name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+type Collaborator = { id: number; name: string; email: string; role: string };
 
 type Project = {
   id: number;
   title: string;
   description: string;
+  userRole: string;
 };
 
 type ApiProject = {
   id_project: number;
   title: string;
   description: string;
+  user_role: string;
 };
 
 export default function Profile() {
   const { user, loading } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [projectCollaborators, setProjectCollaborators] = useState<
+    Record<number, Collaborator[]>
+  >({});
+  const [inviteProjectId, setInviteProjectId] = useState<number | null>(null);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -37,18 +66,32 @@ export default function Profile() {
   }, []);
 
   const fetchProjects = async () => {
-    const res = await fetch(`${API}/api/projects`, {
-      credentials: "include",
-    });
+    const res = await fetch(`${API}/api/projects`, { credentials: "include" });
     const data = await res.json();
-    const formatted = Array.isArray(data)
+    const formatted: Project[] = Array.isArray(data)
       ? (data as ApiProject[]).map((p) => ({
           id: p.id_project,
           title: p.title,
           description: p.description,
+          userRole: p.user_role,
         }))
       : [];
     setProjects(formatted);
+
+    const collabResults = await Promise.all(
+      formatted.map(async (p) => {
+        const r = await fetch(`${API}/api/projects/${p.id}/collaborators`, {
+          credentials: "include",
+        });
+        if (!r.ok) return { id: p.id, collabs: [] as Collaborator[] };
+        const collabs = await r.json();
+        return { id: p.id, collabs: Array.isArray(collabs) ? collabs : [] };
+      }),
+    );
+
+    const map: Record<number, Collaborator[]> = {};
+    for (const { id, collabs } of collabResults) map[id] = collabs;
+    setProjectCollaborators(map);
   };
 
   const createProject = async () => {
@@ -156,80 +199,144 @@ export default function Profile() {
           <p className="projects-empty">Aucun projet pour l'instant.</p>
         )}
 
-        {projects.map((project) => (
-          <div key={project.id} className="project-card">
-            {editingId === project.id ? (
-              <div className="project-card-edit-form">
-                <div className="input-row">
-                  <input
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    placeholder="Nom du projet"
-                  />
-                  <button
-                    type="button"
-                    className="icon-btn icon-success"
-                    onClick={() => updateProject(project.id)}
-                  >
-                    <FiCheck />
-                  </button>
-                </div>
-                <div className="input-row">
-                  <input
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    placeholder="Description"
-                  />
-                  <button
-                    type="button"
-                    className="icon-btn icon-danger"
-                    onClick={() => setEditingId(null)}
-                  >
-                    <FiX />
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <Link
-                  to={`/project/${project.id}`}
-                  className="project-card-folder-wrap"
-                >
-                  <FiFolder className="project-card-folder" />
-                </Link>
+        {projects.map((project) => {
+          const collabs = projectCollaborators[project.id] ?? [];
+          const isOwner = project.userRole === "product_owner";
+          const visibleCollabs = collabs.slice(0, 4);
+          const overflow = collabs.length - visibleCollabs.length;
 
-                <div className="project-card-body">
-                  <Link to={`/project/${project.id}`}>
-                    <h3 className="project-title">{project.title}</h3>
-                  </Link>
-                  <p className="project-card-desc">{project.description}</p>
+          return (
+            <div key={project.id} className="project-card">
+              {editingId === project.id ? (
+                <div className="project-card-edit-form">
+                  <div className="input-row">
+                    <input
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      placeholder="Nom du projet"
+                    />
+                    <button
+                      type="button"
+                      className="icon-btn icon-success"
+                      onClick={() => updateProject(project.id)}
+                    >
+                      <FiCheck />
+                    </button>
+                    <button
+                      type="button"
+                      className="icon-btn icon-danger"
+                      onClick={() => setEditingId(null)}
+                    >
+                      <FiX />
+                    </button>
+                  </div>
+                  <div className="input-row">
+                    <input
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      placeholder="Description"
+                    />
+                  </div>
                 </div>
+              ) : (
+                <>
+                  {/* HEADER : icône + titre cliquable + actions */}
+                  <div className="project-card-header">
+                    <Link
+                      to={`/project/${project.id}`}
+                      className="project-card-folder-wrap"
+                    >
+                      <FiFolder className="project-card-folder" />
+                    </Link>
+                    <Link
+                      to={`/project/${project.id}`}
+                      className="project-card-title-link"
+                    >
+                      <h3 className="project-title">{project.title}</h3>
+                    </Link>
+                    <div className="actions">
+                      {isOwner && (
+                        <button
+                          type="button"
+                          className="icon-btn icon-primary"
+                          onClick={() => {
+                            setEditingId(project.id);
+                            setEditTitle(project.title);
+                            setEditDescription(project.description);
+                          }}
+                        >
+                          <FiEdit2 />
+                        </button>
+                      )}
+                      {isOwner && (
+                        <button
+                          type="button"
+                          className="icon-btn icon-danger"
+                          onClick={() => deleteProject(project.id)}
+                        >
+                          <FiTrash2 />
+                        </button>
+                      )}
+                    </div>
+                  </div>
 
-                <div className="actions">
-                  <button
-                    type="button"
-                    className="icon-btn icon-primary"
-                    onClick={() => {
-                      setEditingId(project.id);
-                      setEditTitle(project.title);
-                      setEditDescription(project.description);
-                    }}
-                  >
-                    <FiEdit2 />
-                  </button>
-                  <button
-                    type="button"
-                    className="icon-btn icon-danger"
-                    onClick={() => deleteProject(project.id)}
-                  >
-                    <FiTrash2 />
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        ))}
+                  {/* BODY : description */}
+                  {project.description && (
+                    <p className="project-card-desc">{project.description}</p>
+                  )}
+
+                  {/* FOOTER : badge rôle + avatars collabs + ajouter */}
+                  <div className="project-card-footer">
+                    {isOwner ? (
+                      <span className="badge-po">PO</span>
+                    ) : (
+                      <span className="badge-collab">Collab</span>
+                    )}
+                    <div className="project-card-collabs avatar-stack">
+                      {visibleCollabs.map((c) => (
+                        <span
+                          key={c.id}
+                          className="avatar-circle"
+                          style={{ background: getAvatarColor(c.id) }}
+                          title={c.name}
+                        >
+                          {getInitials(c.name)}
+                        </span>
+                      ))}
+                      {overflow > 0 && (
+                        <span className="avatar-circle avatar-overflow">
+                          +{overflow}
+                        </span>
+                      )}
+                      {isOwner && (
+                        <button
+                          type="button"
+                          className="add-collab-btn"
+                          onClick={() => setInviteProjectId(project.id)}
+                          title="Inviter un collaborateur"
+                        >
+                          <img
+                            src={logoAddCollab}
+                            alt="Inviter un collaborateur"
+                          />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })}
       </section>
+
+      {inviteProjectId !== null && (
+        <InviteCollaboratorModal
+          projectId={inviteProjectId}
+          onClose={() => setInviteProjectId(null)}
+          onSuccess={fetchProjects}
+        />
+      )}
     </div>
   );
 }

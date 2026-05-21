@@ -13,6 +13,7 @@ import RegisterPage from "./pages/RegisterPage";
 
 import Board from "./pages/Board";
 import Home from "./pages/Home";
+import InvitePage from "./pages/InvitePage";
 import Profile from "./pages/Profile";
 
 const router = createBrowserRouter([
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
 
       { path: "login", element: <LoginPage /> },
       { path: "register", element: <RegisterPage /> },
+      { path: "invite/:token", element: <InvitePage /> },
 
       {
         element: <ProtectedRoute />,

@@ -61,3 +61,21 @@ CREATE TABLE user_task (
     FOREIGN KEY (task_id) REFERENCES task(id_task) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
+
+-- =======================================
+-- INVITATION (invitations par email)
+-- =======================================
+CREATE TABLE invitation (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    token      VARCHAR(64) NOT NULL UNIQUE,
+    project_id INT NOT NULL,
+    inviter_id INT NOT NULL,
+    email      VARCHAR(100) NOT NULL,
+    role       ENUM('collaborator','product_owner') NOT NULL DEFAULT 'collaborator',
+    status     ENUM('pending','accepted','declined','expired') NOT NULL DEFAULT 'pending',
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (project_id) REFERENCES project(id_project) ON DELETE CASCADE,
+    FOREIGN KEY (inviter_id) REFERENCES user(id) ON DELETE CASCADE
+);

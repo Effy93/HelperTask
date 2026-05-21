@@ -7,6 +7,7 @@ const router = express.Router();
 /* ************************************************************************* */
 
 import authController from "./controllers/authController";
+import invitationController from "./controllers/invitationController";
 import projectController from "./controllers/projectController";
 import taskController from "./controllers/taskController";
 import userController from "./controllers/userController";
@@ -77,6 +78,22 @@ router.delete(
   "/api/tasks/:id/assignees/:userId",
   verifyToken,
   taskController.unassignUser,
+);
+
+/* ************************************************************************* */
+// INVITATION
+/* ************************************************************************* */
+
+router.post(
+  "/api/projects/:id/invitations",
+  verifyToken,
+  invitationController.send,
+);
+router.get("/api/invitations/:token", invitationController.verify);
+router.post(
+  "/api/invitations/:token/accept",
+  verifyToken,
+  invitationController.accept,
 );
 
 /* ************************************************************************* */

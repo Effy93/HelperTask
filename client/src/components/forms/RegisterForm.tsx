@@ -1,24 +1,42 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./form.css";
-import type { IUser } from "../../../../server/src/types/IUser";
 
 const API = import.meta.env.VITE_API_URL as string;
 
-interface FormProps {
-  setUser?: (user: IUser | null) => void;
-}
+export default function RegisterForm() {
+  const { setUser } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get("token");
 
-export default function RegisterForm({ setUser }: FormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [emailLocked, setEmailLocked] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [inviteProjectTitle, setInviteProjectTitle] = useState("");
 
-  const validateEmail = (email: string) => {
-    return /\S+@\S+\.\S+/.test(email);
-  };
+  useEffect(() => {
+    if (!inviteToken) return;
+    const fetchInvite = async () => {
+      try {
+        const res = await fetch(`${API}/api/invitations/${inviteToken}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setEmail(data.email);
+        setEmailLocked(true);
+        setInviteProjectTitle(data.projectTitle);
+      } catch {
+        // token invalide ou expiré, on laisse le formulaire normal
+      }
+    };
+    fetchInvite();
+  }, [inviteToken]);
+
+  const validateEmail = (value: string) => /\S+@\S+\.\S+/.test(value);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +46,6 @@ export default function RegisterForm({ setUser }: FormProps) {
       setMessage("Email invalide.");
       return;
     }
-
     if (password !== confirmPassword) {
       setMessage("Les mots de passe ne correspondent pas.");
       return;
@@ -40,25 +57,55 @@ export default function RegisterForm({ setUser }: FormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
-
       const data = await res.json();
-
       if (!res.ok) {
         setMessage(data.message || "Erreur d'inscription");
-        setUser?.(null);
-      } else {
-        setMessage("Inscription réussie !");
-        setUser?.(null);
+        return;
       }
-    } catch (error) {
-      console.error(error);
+
+      // Auto-login après inscription
+      const loginRes = await fetch(`${API}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+      if (!loginRes.ok) {
+        setMessage("Inscription réussie ! Connectez-vous pour continuer.");
+        navigate("/login");
+        return;
+      }
+
+      const meRes = await fetch(`${API}/api/me`, { credentials: "include" });
+      const meData = await meRes.json();
+      setUser(meData.user);
+
+      if (inviteToken) {
+        const acceptRes = await fetch(
+          `${API}/api/invitations/${inviteToken}/accept`,
+          { method: "POST", credentials: "include" },
+        );
+        const acceptData = await acceptRes.json();
+        if (acceptRes.ok) {
+          navigate(`/project/${acceptData.projectId}`);
+          return;
+        }
+      }
+
+      navigate("/profile");
+    } catch {
       setMessage("Erreur réseau");
-      setUser?.(null);
     }
   };
 
   return (
     <div>
+      {inviteProjectTitle && (
+        <p className="invite-banner">
+          Vous rejoignez le projet <strong>« {inviteProjectTitle} »</strong>
+        </p>
+      )}
+
       <form onSubmit={handleSubmit}>
         <div className="input-group">
           <input
@@ -79,7 +126,9 @@ export default function RegisterForm({ setUser }: FormProps) {
             required
             placeholder=" "
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            readOnly={emailLocked}
+            onChange={(e) => !emailLocked && setEmail(e.target.value)}
+            style={emailLocked ? { opacity: 0.7, cursor: "not-allowed" } : {}}
           />
           <label htmlFor="email">Email</label>
         </div>
@@ -109,10 +158,15 @@ export default function RegisterForm({ setUser }: FormProps) {
         </div>
 
         <button type="submit" className="btn-animated">
-          <span>S'inscrire</span>
+          <span>
+            {inviteToken ? "S'inscrire et rejoindre le projet" : "S'inscrire"}
+          </span>
         </button>
         <p style={{ marginTop: "1rem" }}>
-          Déjà un compte ? <Link to="/login">Se connecter</Link>
+          Déjà un compte ?{" "}
+          <Link to={inviteToken ? `/login?token=${inviteToken}` : "/login"}>
+            Se connecter
+          </Link>
         </p>
       </form>
 

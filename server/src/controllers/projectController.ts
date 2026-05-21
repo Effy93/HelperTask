@@ -192,6 +192,8 @@ const addCollaborator: RequestHandler = async (req, res) => {
     const id = Number(req.params.id);
     const userId = (req as AuthRequest).user?.id;
     const email = String(req.body.email ?? "").trim();
+    const role =
+      req.body.role === "product_owner" ? "product_owner" : "collaborator";
 
     if (!userId) {
       res.status(401).json({ message: "Non authentifié" });
@@ -222,7 +224,7 @@ const addCollaborator: RequestHandler = async (req, res) => {
       return;
     }
 
-    await projectRepository.addCollaborator(id, targetUser.id);
+    await projectRepository.addCollaborator(id, targetUser.id, role);
     res.status(201).json({ message: "Collaborateur ajouté" });
   } catch {
     res.status(500).json({ message: "Erreur serveur" });

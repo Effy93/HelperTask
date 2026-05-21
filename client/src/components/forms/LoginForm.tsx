@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./form.css";
 
@@ -8,6 +8,8 @@ const API = import.meta.env.VITE_API_URL as string;
 export default function LoginForm() {
   const { setUser } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get("token");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,16 +32,11 @@ export default function LoginForm() {
         return;
       }
 
-      // 🔥 récupérer le user
-      const meRes = await fetch(`${API}/api/me`, {
-        credentials: "include",
-      });
-
+      const meRes = await fetch(`${API}/api/me`, { credentials: "include" });
       const userData = await meRes.json();
+      setUser(userData.user);
 
-      setUser(userData.user); // ✅ FIX ICI
-
-      navigate("/profile");
+      navigate(inviteToken ? `/invite/${inviteToken}` : "/profile");
     } catch {
       setMessage("Erreur réseau");
     }

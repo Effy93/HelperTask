@@ -7,10 +7,13 @@ import {
 import type { ITask } from "../../../../server/src/types/ITask";
 import TaskCard from "./TaskCard";
 
+export type Assignee = { id: number; name: string; email: string };
+
 type Props = {
   id: string;
   title: string;
   tasks: ITask[];
+  taskAssignees: Record<number, Assignee[]>;
   onDelete?: (taskId: number) => void;
   onUpdate?: (taskId: number, updates: Partial<ITask>) => void;
   onStatusChange?: (taskId: number, status: ITask["status"]) => void;
@@ -20,6 +23,7 @@ export default function Column({
   id,
   title,
   tasks,
+  taskAssignees,
   onDelete,
   onUpdate,
   onStatusChange,
@@ -42,6 +46,7 @@ export default function Column({
           <TaskCard
             key={task.id}
             task={task}
+            assignees={taskAssignees[task.id] ?? []}
             onDelete={onDelete}
             onUpdate={onUpdate}
             onStatusChange={onStatusChange}
