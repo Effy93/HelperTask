@@ -47,4 +47,11 @@
 
   --color-danger: #c0392b;
   --color-warning: #f39c12;
+
+  /* ========================= */
+  /* Aliases texte             */
+  /* ========================= */
+
+  --color-text: #2e2e2e;
+  --color-text-secondary: #6f6f6f;
 }

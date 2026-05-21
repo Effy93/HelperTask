@@ -15,8 +15,8 @@ export default function Home() {
           Connectez-vous pour commencer à utiliser l'application.
         </p>
 
-        <Link to="/login" className="home-btn">
-          Commencer
+        <Link to="/login" className="home-btn btn-animated">
+          <span>Commencer</span>
         </Link>
       </div>
     </div>

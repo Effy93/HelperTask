@@ -16,10 +16,10 @@ form {
   transform: translateY(-50%);
   font-size: 16px;
   pointer-events: none;
-  color: #333; /* texte sombre par défaut */
+  color: var(--color-text-secondary);
   padding: 0 5px;
-  transition: 0.3s;
-  background: #fff; /* fond blanc par défaut */
+  transition: top 0.3s ease, font-size 0.3s ease, color 0.3s ease;
+  background: white;
 }
 
 .input-group input {
@@ -27,36 +27,49 @@ form {
   height: 60px;
   font-size: 16px;
   padding: 0 15px;
-  border: 1.2px solid #333; /* couleur de bordure par défaut */
-  border-radius: 5px;
+  border: 1.2px solid var(--color-border);
+  border-radius: 12px;
   outline: none;
+  color: var(--color-text);
+  transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+  border-color: var(--color-primary);
 }
 
 .input-group input:focus ~ label,
 .input-group input:valid ~ label {
   top: 0;
   font-size: 14px;
-  background: #fff;
+  color: var(--color-primary);
 }
 
-/* Boutons */
 button[type="submit"] {
-  padding: 0.6rem 1rem;
+  padding: 12px 32px;
   font-size: 1rem;
-  border-radius: 6px;
+  font-weight: 600;
+  border-radius: 50px;
   border: none;
-  background: #007bff;
-  color: #fff;
+  background: var(--color-primary);
+  color: white;
   cursor: pointer;
   margin-top: 10px;
+  transition: all 0.3s ease;
 }
 
 button[type="submit"]:hover {
-  background: #0056b3;
+  background: var(--color-accent);
+  box-shadow: 0 5px 15px rgba(252, 119, 83, 0.4);
+  transform: translateY(-2px);
 }
 
-/* Message */
+button[type="submit"]:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
 form p {
   margin-top: 10px;
-  color: red;
+  color: var(--color-danger);
 }

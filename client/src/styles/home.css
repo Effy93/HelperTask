@@ -33,14 +33,19 @@
 /* bouton */
 .home-btn {
   display: inline-block;
-  padding: 10px 22px;
+  padding: 10px 24px;
   background: var(--color-primary);
   color: white;
   text-decoration: none;
-  transition: 0.2s ease;
+  border-radius: 50px;
+  font-weight: 600;
 }
 
 .home-btn:hover {
-  transform: translateY(-2px);
   background: var(--color-accent);
+  box-shadow: 0 5px 15px rgba(252, 119, 83, 0.4);
+}
+
+.home-btn:active {
+  transform: translateY(0);
 }

@@ -431,7 +431,7 @@ export default function Board() {
   if (Number.isNaN(projectId) || !project) return <p>Projet introuvable.</p>;
 
   return (
-    <div className="profile-page">
+    <div className="board-page">
       <div className="profile-hero">
         <div>
           <Link to="/profile">← Retour aux projets</Link>
@@ -440,10 +440,10 @@ export default function Board() {
         </div>
         <button
           type="button"
-          className="add-task-toggle"
+          className="add-task-toggle btn-animated"
           onClick={() => openTaskPanel()}
         >
-          + Nouvelle tâche
+          <span>+ Nouvelle tâche</span>
         </button>
       </div>
 
