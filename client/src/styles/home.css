@@ -1,8 +1,9 @@
 .home {
-  height: 100vh;
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 2rem 1rem;
 }
 
 .home-content {
