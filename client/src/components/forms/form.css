@@ -12,13 +12,13 @@
 .form-card {
   width: 100%;
   max-width: 440px;
-  background: rgba(255, 249, 245, 0.55);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(252, 119, 83, 0.25);
-  border-radius: 20px;
+  background: var(--glass-l1-bg);
+  backdrop-filter: var(--glass-l1-blur);
+  -webkit-backdrop-filter: var(--glass-l1-blur);
+  border: 1px solid rgba(252, 119, 83, 0.28);
+  border-radius: 24px;
   padding: 2.5rem 2rem;
-  box-shadow: 0 8px 32px rgba(252, 119, 83, 0.1);
+  box-shadow: 0 8px 32px rgba(252, 119, 83, 0.12), var(--glass-l1-shadow);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,10 +56,9 @@ form {
   pointer-events: none;
   color: var(--color-text-secondary);
   padding: 0 5px;
-  /* transform seul pour l'animation : évite reflow layout à chaque frame */
   transition: transform 0.3s ease, font-size 0.3s ease, color 0.3s ease;
-  /* correspond au fond crème de la .form-card */
-  background: #fff9f5;
+  background: rgba(255, 249, 245, 0.85);
+  border-radius: 4px;
 }
 
 .input-group input {

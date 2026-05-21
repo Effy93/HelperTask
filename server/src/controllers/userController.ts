@@ -27,7 +27,9 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const add: RequestHandler = async (req, res) => {
   try {
     const name = String(req.body.name ?? "").trim();
-    const email = String(req.body.email ?? "").trim().toLowerCase();
+    const email = String(req.body.email ?? "")
+      .trim()
+      .toLowerCase();
     const password = String(req.body.password ?? "");
 
     if (!name || !email || !password) {
@@ -54,7 +56,11 @@ const add: RequestHandler = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser: Omit<IUser, "id"> = { name, email, password: hashedPassword };
+    const newUser: Omit<IUser, "id"> = {
+      name,
+      email,
+      password: hashedPassword,
+    };
     await userRepository.create(newUser);
     res.status(201).json({ message: "Utilisateur créé" });
   } catch {

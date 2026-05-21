@@ -108,7 +108,9 @@ export default function RegisterForm({ setUser }: FormProps) {
           <label htmlFor="confirmPassword">Confirmer le mot de passe</label>
         </div>
 
-        <button type="submit" className="btn-animated"><span>S'inscrire</span></button>
+        <button type="submit" className="btn-animated">
+          <span>S'inscrire</span>
+        </button>
         <p style={{ marginTop: "1rem" }}>
           Déjà un compte ? <Link to="/login">Se connecter</Link>
         </p>

@@ -1,6 +1,8 @@
 import {
   DndContext,
+  DragOverlay,
   type DragEndEvent,
+  type DragStartEvent,
   PointerSensor,
   closestCenter,
   useSensor,
@@ -15,6 +17,7 @@ import type { ITask, TaskStatus } from "../../../server/src/types/ITask";
 const API = import.meta.env.VITE_API_URL as string;
 import btnRetour from "../assets/images/btn-retour_projets.png";
 import Column from "../components/profile/Column";
+import TaskCard from "../components/profile/TaskCard";
 import { useAuth } from "../context/AuthContext";
 import "../styles/profile.css";
 
@@ -24,6 +27,13 @@ type Project = {
   id_project: number;
   title: string;
   description: string;
+};
+
+type Collaborator = {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
 };
 
 const normalizeTask = (task: unknown): ITask => {
@@ -53,11 +63,13 @@ export default function Board() {
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [newDeadline, setNewDeadline] = useState("");
-  const [newCollaborator, setNewCollaborator] = useState("");
+  const [selectedAssigneeId, setSelectedAssigneeId] = useState<number | "">("");
   const [taskStatus, setTaskStatus] = useState<TaskStatus>("todo");
   const [editingTask, setEditingTask] = useState<ITask | null>(null);
   const [showTaskPanel, setShowTaskPanel] = useState(false);
   const [loadingTasks, setLoadingTasks] = useState(true);
+  const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
+  const [activeTask, setActiveTask] = useState<ITask | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -82,12 +94,9 @@ export default function Board() {
     setLoadingTasks(true);
 
     try {
-      const res = await fetch(
-        `${API}/api/tasks?project_id=${projectId}`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`${API}/api/tasks?project_id=${projectId}`, {
+        credentials: "include",
+      });
 
       if (!res.ok) {
         setTasks([]);
@@ -107,12 +116,9 @@ export default function Board() {
     if (Number.isNaN(projectId)) return;
 
     const fetchProject = async () => {
-      const res = await fetch(
-        `${API}/api/projects/${projectId}`,
-        {
-          credentials: "include",
-        },
-      );
+      const res = await fetch(`${API}/api/projects/${projectId}`, {
+        credentials: "include",
+      });
 
       if (!res.ok) return;
 
@@ -120,8 +126,19 @@ export default function Board() {
       setProject(projectData);
     };
 
+    const fetchCollaborators = async () => {
+      const res = await fetch(
+        `${API}/api/projects/${projectId}/collaborators`,
+        { credentials: "include" },
+      );
+      if (!res.ok) return;
+      const data = await res.json();
+      setCollaborators(Array.isArray(data) ? data : []);
+    };
+
     fetchProject();
     fetchTasks();
+    fetchCollaborators();
   }, [projectId, fetchTasks]);
 
   const updateTaskOrder = async (
@@ -145,7 +162,7 @@ export default function Board() {
     setNewTitle("");
     setNewContent("");
     setNewDeadline("");
-    setNewCollaborator("");
+    setSelectedAssigneeId("");
     setTaskStatus("todo");
   };
 
@@ -156,16 +173,14 @@ export default function Board() {
       setNewContent(task.content);
       setTaskStatus(task.status);
       setNewDeadline(task.deadline ? task.deadline.slice(0, 10) : "");
-      setNewCollaborator("");
     } else {
       setEditingTask(null);
       setNewTitle("");
       setNewContent("");
       setNewDeadline("");
       setTaskStatus("todo");
-      setNewCollaborator("");
     }
-
+    setSelectedAssigneeId("");
     setShowTaskPanel(true);
   };
 
@@ -191,17 +206,14 @@ export default function Board() {
         updatedTask.position = destinationItems.length;
       }
 
-      const res = await fetch(
-        `${API}/api/tasks/${editingTask.id}`,
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedTask),
+      const res = await fetch(`${API}/api/tasks/${editingTask.id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify(updatedTask),
+      });
 
       if (!res.ok) {
         alert("Impossible de modifier la tâche");
@@ -256,6 +268,16 @@ export default function Board() {
       if (!res.ok) {
         alert("Impossible de créer la tâche");
         return;
+      }
+
+      if (selectedAssigneeId !== "") {
+        const { id: newTaskId } = await res.json();
+        await fetch(`${API}/api/tasks/${newTaskId}/assignees`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: selectedAssigneeId }),
+        });
       }
     }
 
@@ -350,7 +372,13 @@ export default function Board() {
   const buildOrderedColumn = (status: TaskStatus) =>
     [...groupedTasks[status]].sort((a, b) => a.position - b.position);
 
+  const handleDragStart = (event: DragStartEvent) => {
+    const taskId = Number(event.active.id);
+    setActiveTask(tasks.find((t) => t.id === taskId) ?? null);
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
+    setActiveTask(null);
     const { active, over } = event;
 
     if (!over) return;
@@ -453,13 +481,45 @@ export default function Board() {
         <button
           type="button"
           className="add-task-toggle btn-animated"
-          onClick={() => openTaskPanel()}
+          onClick={() => (showTaskPanel ? closeTaskPanel() : openTaskPanel())}
         >
           <span>+ Nouvelle tâche</span>
         </button>
       </div>
 
       <div className="board-layout">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="board">
+            {projectStatusList.map((status) => (
+              <Column
+                key={status}
+                id={status}
+                title={
+                  status === "todo"
+                    ? "À faire"
+                    : status === "doing"
+                      ? "En cours"
+                      : "Terminé"
+                }
+                tasks={buildOrderedColumn(status)}
+                onDelete={handleDeleteTask}
+                onUpdate={handleUpdateTask}
+                onStatusChange={handleChangeTaskStatus}
+              />
+            ))}
+          </div>
+          <DragOverlay>
+            {activeTask ? (
+              <TaskCard task={activeTask} isOverlay />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+
         <aside
           className={`task-drawer ${showTaskPanel ? "open" : ""}`}
           aria-expanded={showTaskPanel}
@@ -499,24 +559,7 @@ export default function Board() {
               />
             </label>
             <label>
-              Deadline
-              <input
-                type="date"
-                value={newDeadline}
-                onChange={(event) => setNewDeadline(event.target.value)}
-              />
-            </label>
-            <label>
-              Collaborateur
-              <input
-                type="text"
-                placeholder="Nom du collaborateur"
-                value={newCollaborator}
-                onChange={(event) => setNewCollaborator(event.target.value)}
-              />
-            </label>
-            <label>
-              Statut
+              Colonne
               <select
                 value={taskStatus}
                 onChange={(event) =>
@@ -527,6 +570,32 @@ export default function Board() {
                 <option value="doing">En cours</option>
                 <option value="done">Terminé</option>
               </select>
+            </label>
+            <label>
+              Assigné
+              <select
+                value={selectedAssigneeId}
+                onChange={(event) =>
+                  setSelectedAssigneeId(
+                    event.target.value ? Number(event.target.value) : "",
+                  )
+                }
+              >
+                <option value="">Nommer un collaborateur</option>
+                {collaborators.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Deadline
+              <input
+                type="date"
+                value={newDeadline}
+                onChange={(event) => setNewDeadline(event.target.value)}
+              />
             </label>
             <div className="drawer-actions">
               <button
@@ -546,32 +615,6 @@ export default function Board() {
             </div>
           </div>
         </aside>
-
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <div className="board">
-            {projectStatusList.map((status) => (
-              <Column
-                key={status}
-                id={status}
-                title={
-                  status === "todo"
-                    ? "À faire"
-                    : status === "doing"
-                      ? "En cours"
-                      : "Terminé"
-                }
-                tasks={buildOrderedColumn(status)}
-                onDelete={handleDeleteTask}
-                onUpdate={handleUpdateTask}
-                onStatusChange={handleChangeTaskStatus}
-              />
-            ))}
-          </div>
-        </DndContext>
       </div>
     </div>
   );

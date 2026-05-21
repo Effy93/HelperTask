@@ -42,7 +42,9 @@ import cors from "cors";
 
 const allowedOrigin = process.env.CLIENT_URL;
 if (!allowedOrigin) {
-  console.warn("⚠️  CLIENT_URL non défini — CORS bloqué pour toutes les origines");
+  console.warn(
+    "⚠️  CLIENT_URL non défini — CORS bloqué pour toutes les origines",
+  );
 }
 app.use(
   cors({

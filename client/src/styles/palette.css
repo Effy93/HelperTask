@@ -13,19 +13,46 @@
   --color-success-hover: #2c7421;
 
   /* ========================= */
-  /* Glass / transparence      */
+  /* Glass — niveau 1          */
+  /* éléments structurants     */
+  /* (panels, drawer, menus)   */
   /* ========================= */
 
-  --glass-bg: rgba(255, 255, 255, 0.18);
-  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-l1-bg: rgba(255, 249, 245, 0.55);
+  --glass-l1-blur: blur(20px);
+  --glass-l1-border: rgba(255, 255, 255, 0.50);
+  --glass-l1-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+
+  /* ========================= */
+  /* Glass — niveau 2          */
+  /* colonnes kanban           */
+  /* ========================= */
+
+  --glass-l2-bg: rgba(255, 255, 255, 0.28);
+  --glass-l2-blur: blur(12px);
+  --glass-l2-border: rgba(255, 255, 255, 0.38);
+  --glass-l2-shadow: 0 10px 35px rgba(0, 0, 0, 0.06);
+
+  /* ========================= */
+  /* Glass — niveau 3          */
+  /* cartes et inputs          */
+  /* ========================= */
+
+  --glass-l3-bg: rgba(255, 255, 255, 0.45);
+  --glass-l3-border: rgba(255, 255, 255, 0.55);
+  --glass-l3-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+
+  /* ========================= */
+  /* Surfaces (aliases)        */
+  /* ========================= */
+
+  --color-surface: var(--glass-l1-bg);
+  --color-surface-alt: var(--glass-l2-bg);
+
+  /* Legacy */
+  --glass-bg: var(--glass-l3-bg);
+  --glass-border: var(--glass-l3-border);
   --glass-shadow: rgba(0, 0, 0, 0.15);
-
-  /* ========================= */
-  /* Surfaces                  */
-  /* ========================= */
-
-  --color-surface: rgba(255, 255, 255, 0.85); /* cartes */
-  --color-surface-alt: rgba(255, 255, 255, 0.65);
 
   /* ========================= */
   /* Texte                     */
@@ -63,14 +90,15 @@
   --btn-radius-card: 14px;
   --btn-radius-icon: 12px;
 
-  --btn-transition:       background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-  --btn-transition-bg:    background 0.2s ease, transform 0.2s ease;
+  --btn-transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s
+    ease;
+  --btn-transition-bg: background 0.2s ease, transform 0.2s ease;
   --btn-transition-color: background 0.2s ease, color 0.2s ease;
 
-  --btn-lift:    translateY(-2px);
+  --btn-lift: translateY(-2px);
   --btn-lift-sm: translateY(-1px);
-  --btn-press:   translateY(1px);
+  --btn-press: translateY(1px);
 
-  --btn-shadow:    0 5px 15px rgba(252, 119, 83, 0.4);
+  --btn-shadow: 0 5px 15px rgba(252, 119, 83, 0.4);
   --btn-shadow-sm: 0 4px 12px rgba(252, 119, 83, 0.35);
 }

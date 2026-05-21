@@ -311,4 +311,14 @@ const unassignUser: RequestHandler = async (req, res) => {
   }
 };
 
-export default { browse, read, add, edit, reorder, destroy, getAssignees, assignUser, unassignUser };
+export default {
+  browse,
+  read,
+  add,
+  edit,
+  reorder,
+  destroy,
+  getAssignees,
+  assignUser,
+  unassignUser,
+};

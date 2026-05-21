@@ -72,7 +72,9 @@ export default function LoginForm() {
           <label htmlFor="password">Mot de passe</label>
         </div>
 
-        <button type="submit" className="btn-animated"><span>Se connecter</span></button>
+        <button type="submit" className="btn-animated">
+          <span>Se connecter</span>
+        </button>
 
         <p style={{ marginTop: "1rem" }}>
           Pas de compte ? <Link to="/register">S’inscrire</Link>

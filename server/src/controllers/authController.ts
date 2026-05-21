@@ -14,7 +14,9 @@ const login = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const email = String(req.body.email ?? "").trim().toLowerCase();
+    const email = String(req.body.email ?? "")
+      .trim()
+      .toLowerCase();
     const password = String(req.body.password ?? "");
 
     if (!email || !password) {

@@ -109,7 +109,9 @@ export default function Profile() {
         <h2 className="panel-title">Créer un projet</h2>
 
         <div className="input-field">
-          <label htmlFor="project-title" className="sr-only">Nom du projet</label>
+          <label htmlFor="project-title" className="sr-only">
+            Nom du projet
+          </label>
           <input
             id="project-title"
             ref={titleInputRef}
@@ -123,7 +125,9 @@ export default function Profile() {
         </div>
 
         <div className="input-field">
-          <label htmlFor="project-description" className="sr-only">Description</label>
+          <label htmlFor="project-description" className="sr-only">
+            Description
+          </label>
           <textarea
             id="project-description"
             placeholder="Description"

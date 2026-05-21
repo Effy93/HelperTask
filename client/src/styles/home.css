@@ -10,9 +10,12 @@
   text-align: center;
   padding: 40px 30px;
   max-width: 500px;
-  background: var(--color-surface);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  border-radius: 8px;
+  background: var(--glass-l1-bg);
+  backdrop-filter: var(--glass-l1-blur);
+  -webkit-backdrop-filter: var(--glass-l1-blur);
+  border: 1px solid var(--glass-l1-border);
+  box-shadow: 0 10px 40px rgba(252, 119, 83, 0.10);
+  border-radius: 24px;
 }
 
 .home h1 {

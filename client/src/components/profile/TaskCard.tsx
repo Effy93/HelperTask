@@ -9,6 +9,7 @@ type Props = {
   onDelete?: (taskId: number) => void;
   onUpdate?: (taskId: number, updates: Partial<ITask>) => void;
   onStatusChange?: (taskId: number, status: TaskStatus) => void;
+  isOverlay?: boolean;
 };
 
 export default function TaskCard({
@@ -16,8 +17,9 @@ export default function TaskCard({
   onDelete,
   onUpdate,
   onStatusChange,
+  isOverlay = false,
 }: Props) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({
       id: task.id.toString(),
     });
@@ -59,7 +61,7 @@ export default function TaskCard({
       style={style}
       {...attributes}
       {...listeners}
-      className="task-card"
+      className={`task-card${isDragging ? " task-card--dragging" : ""}${isOverlay ? " task-card--overlay" : ""}`}
     >
       <div className="task-card-content">
         {isEditing ? (

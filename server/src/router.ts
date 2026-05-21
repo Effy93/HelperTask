@@ -36,9 +36,26 @@ router.get("/api/projects", verifyToken, projectController.browse);
 router.get("/api/projects/:id", verifyToken, projectController.read);
 router.put("/api/projects/:id", verifyToken, projectController.edit);
 router.delete("/api/projects/:id", verifyToken, projectController.destroy);
-router.get("/api/projects/:id/collaborators", verifyToken, projectController.getCollaborators);
-router.post("/api/projects/:id/collaborators", verifyToken, projectController.addCollaborator);
-router.delete("/api/projects/:id/collaborators/:userId", verifyToken, projectController.removeCollaborator);
+router.get(
+  "/api/projects/:id/collaborators",
+  verifyToken,
+  projectController.getCollaborators,
+);
+router.post(
+  "/api/projects/:id/collaborators",
+  verifyToken,
+  projectController.addCollaborator,
+);
+router.put(
+  "/api/projects/:id/collaborators/:userId",
+  verifyToken,
+  projectController.updateCollaboratorRole,
+);
+router.delete(
+  "/api/projects/:id/collaborators/:userId",
+  verifyToken,
+  projectController.removeCollaborator,
+);
 
 /* ************************************************************************* */
 // TASK (déjà OK)
@@ -50,9 +67,17 @@ router.put("/api/tasks/order", verifyToken, taskController.reorder);
 router.get("/api/tasks/:id", verifyToken, taskController.read);
 router.put("/api/tasks/:id", verifyToken, taskController.edit);
 router.delete("/api/tasks/:id", verifyToken, taskController.destroy);
-router.get("/api/tasks/:id/assignees", verifyToken, taskController.getAssignees);
+router.get(
+  "/api/tasks/:id/assignees",
+  verifyToken,
+  taskController.getAssignees,
+);
 router.post("/api/tasks/:id/assignees", verifyToken, taskController.assignUser);
-router.delete("/api/tasks/:id/assignees/:userId", verifyToken, taskController.unassignUser);
+router.delete(
+  "/api/tasks/:id/assignees/:userId",
+  verifyToken,
+  taskController.unassignUser,
+);
 
 /* ************************************************************************* */
 

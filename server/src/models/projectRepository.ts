@@ -27,7 +27,7 @@ export class ProjectRepository {
 
   async readAllByUser(userId: number) {
     const [rows] = await databaseClient.query<Rows>(
-      `SELECT p.*
+      `SELECT p.*, pu.role AS user_role
        FROM project p
        JOIN project_user pu ON p.id_project = pu.project_id
        WHERE pu.user_id = ?
@@ -84,11 +84,27 @@ export class ProjectRepository {
     return rows;
   }
 
-  async addCollaborator(projectId: number, userId: number, role = "collaborator") {
+  async addCollaborator(
+    projectId: number,
+    userId: number,
+    role = "collaborator",
+  ) {
     await databaseClient.query(
       "INSERT IGNORE INTO project_user (project_id, user_id, role) VALUES (?, ?, ?)",
       [projectId, userId, role],
     );
+  }
+
+  async updateCollaboratorRole(
+    projectId: number,
+    userId: number,
+    role: string,
+  ) {
+    const [result] = await databaseClient.query<Result>(
+      "UPDATE project_user SET role = ? WHERE project_id = ? AND user_id = ?",
+      [role, projectId, userId],
+    );
+    return result.affectedRows;
   }
 
   async removeCollaborator(projectId: number, userId: number) {
