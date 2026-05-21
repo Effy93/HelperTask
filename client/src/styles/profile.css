@@ -410,9 +410,15 @@ body {
   border: 1px solid rgba(54, 141, 40, 0.16);
 }
 
-.column.todo h2  { color: var(--color-danger); }
-.column.doing h2 { color: var(--color-warning); }
-.column.done h2  { color: var(--color-success); }
+.column.todo h2 {
+  color: var(--color-danger);
+}
+.column.doing h2 {
+  color: var(--color-warning);
+}
+.column.done h2 {
+  color: var(--color-success);
+}
 
 .column-over {
   border: 2px dashed var(--color-primary) !important;

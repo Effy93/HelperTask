@@ -5,16 +5,38 @@
   position: fixed;
   top: 0;
   width: 100%;
+  z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s ease;
-  background: rgba(243, 237, 247, 0.283);
+  /* background: rgba(243, 237, 247, 0.283); */
+  border-bottom: var(--color-primary) 1px solid;
+  background: rgba(255, 249, 245, 0.62);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(12px);
   padding: 1.5rem 2rem;
 }
 
+.header::after {
+  content: "";
+  position: absolute;
+
+  left: 50%;
+  bottom: 0;
+
+  transform: translateX(-50%);
+
+  width: 65%;
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(252, 119, 83, 0.55),
+    transparent
+  );
+}
 /* ========================= */
 /* LOGO */
 /* ========================= */
@@ -34,7 +56,9 @@
   color: inherit;
   outline: none;
 }
-
+h1 {
+  color: var(--color-primary);
+}
 /* ========================= */
 /* NAV */
 /* ========================= */
@@ -69,6 +93,7 @@ nav ul li .nav-link {
 /* RESET spécifique pour button */
 nav ul li button.nav-link {
   all: unset;
+  position: relative;
   display: inline-block;
   cursor: pointer;
   color: var(--color-main);
@@ -105,18 +130,44 @@ nav ul li .nav-link::after {
   border-right: 2px solid;
 }
 
-/* hover */
+/* hover + focus */
 nav ul li .nav-link:hover::before,
-nav ul li .nav-link:hover::after {
+nav ul li .nav-link:hover::after,
+nav ul li .nav-link:focus-visible::before,
+nav ul li .nav-link:focus-visible::after {
   opacity: 1;
   transform: scale(1) rotate(20deg);
 }
 
-nav ul li .nav-link:hover {
+nav ul li .nav-link:hover,
+nav ul li .nav-link:focus-visible {
   color: var(--color-link);
   transform: translateY(-4px) scale(1.1);
 }
 
-nav ul li button.nav-link:hover {
+nav ul li button.nav-link:hover,
+nav ul li button.nav-link:focus-visible {
   color: var(--color-danger);
+}
+
+/* ========================= */
+/* RESPONSIVE MOBILE */
+/* ========================= */
+@media (max-width: 600px) {
+  .header {
+    padding: 0.9rem 1rem;
+  }
+
+  .header h1 {
+    font-size: 1.1rem;
+  }
+
+  nav ul {
+    gap: 1rem;
+  }
+
+  nav ul li .nav-link {
+    font-size: 0.85rem;
+    padding: 4px 0;
+  }
 }
