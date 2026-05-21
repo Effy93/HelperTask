@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "../styles/profile.css";
 
-import { FiCheck, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
+import { FiCheck, FiEdit2, FiFolder, FiTrash2, FiX } from "react-icons/fi";
 
 type Project = {
   id: number;
@@ -28,6 +28,8 @@ export default function Profile() {
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
 
+  const titleInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     fetchProjects();
   }, []);
@@ -36,9 +38,7 @@ export default function Profile() {
     const res = await fetch("http://localhost:3310/api/projects", {
       credentials: "include",
     });
-
     const data = await res.json();
-
     const formatted = Array.isArray(data)
       ? (data as ApiProject[]).map((p) => ({
           id: p.id_project,
@@ -46,7 +46,6 @@ export default function Profile() {
           description: p.description,
         }))
       : [];
-
     setProjects(formatted);
   };
 
@@ -55,21 +54,16 @@ export default function Profile() {
       alert("Titre requis");
       return;
     }
-
     const res = await fetch("http://localhost:3310/api/projects", {
       method: "POST",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, description }),
     });
-
     if (!res.ok) {
       alert("Erreur création projet");
       return;
     }
-
     await fetchProjects();
     setTitle("");
     setDescription("");
@@ -79,37 +73,27 @@ export default function Profile() {
     const res = await fetch(`http://localhost:3310/api/projects/${id}`, {
       method: "PUT",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: editTitle,
-        description: editDescription,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: editTitle, description: editDescription }),
     });
-
     if (!res.ok) {
       alert("Erreur modification");
       return;
     }
-
     await fetchProjects();
     setEditingId(null);
   };
 
   const deleteProject = async (id: number) => {
     if (!confirm("Supprimer ce projet ?")) return;
-
     const res = await fetch(`http://localhost:3310/api/projects/${id}`, {
       method: "DELETE",
       credentials: "include",
     });
-
     if (!res.ok) {
       alert("Erreur suppression");
       return;
     }
-
     await fetchProjects();
   };
 
@@ -117,56 +101,61 @@ export default function Profile() {
   if (!user) return <Navigate to="/login" />;
 
   return (
-    <div className="profile-page">
-      <div className="profile-hero">
-        <h1>Bienvenue {user.name}</h1>
-      </div>
-
+    <div className="profile-content">
       {/* CREATE */}
-      <div className="panel">
-        <h2>Créer un projet</h2>
+      <section id="create" className="profile-panel">
+        <h2 className="panel-title">Créer un projet</h2>
 
-        <div className="input-row">
+        <div className="input-field">
           <input
+            ref={titleInputRef}
             type="text"
             placeholder="Nom du projet"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && createProject()}
           />
-
-          <button
-            type="button"
-            className="icon-btn icon-success"
-            onClick={createProject}
-          >
-            <FiCheck />
-          </button>
+          {title.trim() && <FiCheck className="input-check-icon" />}
         </div>
 
-        <div className="input-row">
-          <input
-            type="text"
+        <div className="input-field">
+          <textarea
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            rows={3}
           />
         </div>
-      </div>
+
+        <div className="panel-footer">
+          <button
+            type="button"
+            className="btn-create btn-animated"
+            onClick={createProject}
+          >
+            <span>Créer le projet</span>
+          </button>
+        </div>
+      </section>
 
       {/* LIST */}
-      <div className="panel">
-        <h2>Mes projets</h2>
+      <section id="projects" className="profile-panel">
+        <h2 className="panel-title">Mes projets</h2>
+
+        {projects.length === 0 && (
+          <p className="projects-empty">Aucun projet pour l'instant.</p>
+        )}
 
         {projects.map((project) => (
           <div key={project.id} className="project-card">
             {editingId === project.id ? (
-              <>
+              <div className="project-card-edit-form">
                 <div className="input-row">
                   <input
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
+                    placeholder="Nom du projet"
                   />
-
                   <button
                     type="button"
                     className="icon-btn icon-success"
@@ -175,13 +164,12 @@ export default function Profile() {
                     <FiCheck />
                   </button>
                 </div>
-
                 <div className="input-row">
                   <input
                     value={editDescription}
                     onChange={(e) => setEditDescription(e.target.value)}
+                    placeholder="Description"
                   />
-
                   <button
                     type="button"
                     className="icon-btn icon-danger"
@@ -190,14 +178,22 @@ export default function Profile() {
                     <FiX />
                   </button>
                 </div>
-              </>
+              </div>
             ) : (
               <>
-                <Link to={`/project/${project.id}`}>
-                  <h2 className="project-title">{project.title}</h2>
+                <Link
+                  to={`/project/${project.id}`}
+                  className="project-card-folder-wrap"
+                >
+                  <FiFolder className="project-card-folder" />
                 </Link>
 
-                <p>{project.description}</p>
+                <div className="project-card-body">
+                  <Link to={`/project/${project.id}`}>
+                    <h3 className="project-title">{project.title}</h3>
+                  </Link>
+                  <p className="project-card-desc">{project.description}</p>
+                </div>
 
                 <div className="actions">
                   <button
@@ -211,7 +207,6 @@ export default function Profile() {
                   >
                     <FiEdit2 />
                   </button>
-
                   <button
                     type="button"
                     className="icon-btn icon-danger"
@@ -224,7 +219,7 @@ export default function Profile() {
             )}
           </div>
         ))}
-      </div>
+      </section>
     </div>
   );
 }

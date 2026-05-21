@@ -11,8 +11,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 
 import type { ITask, TaskStatus } from "../../../server/src/types/ITask";
+import btnRetour from "../assets/images/btn-retour_projets.png";
 import Column from "../components/profile/Column";
 import { useAuth } from "../context/AuthContext";
+import "../styles/profile.css";
 
 const projectStatusList: TaskStatus[] = ["todo", "doing", "done"];
 
@@ -433,8 +435,10 @@ export default function Board() {
   return (
     <div className="board-page">
       <div className="profile-hero">
-        <div>
-          <Link to="/profile">← Retour aux projets</Link>
+        <Link to="/profile" className="back-link">
+          <img src={btnRetour} alt="Retour aux projets" />
+        </Link>
+        <div className="hero-center">
           <h1>{project.title}</h1>
           <p>{project.description}</p>
         </div>
