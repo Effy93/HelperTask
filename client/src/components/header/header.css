@@ -1,5 +1,5 @@
 /* ========================= */
-/* HEADER */
+/* HEADER                    */
 /* ========================= */
 .header {
   position: fixed;
@@ -11,20 +11,20 @@
   align-items: center;
   transition: padding 0.3s ease, box-shadow 0.3s ease;
   border-bottom: 1px solid rgba(252, 119, 83, 0.35);
-  background: rgba(255, 249, 245, 0.48);
+  background: rgba(255, 249, 245, 0.28);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 2px 20px rgba(252, 119, 83, 0.08);
-  padding: 1rem 2rem;
+  padding: 0.9rem 1rem;
 }
 
 .header--small {
-  padding: 0.4rem 2rem;
+  padding: 0.3rem 1rem;
   box-shadow: 0 2px 14px rgba(252, 119, 83, 0.12);
 }
 
 .header--small h1 {
-  font-size: 1.2rem;
+  font-size: 0.95rem;
 }
 
 .header--small .nav-icon-link,
@@ -35,15 +35,11 @@
 .header::after {
   content: "";
   position: absolute;
-
   left: 50%;
   bottom: 0;
-
   transform: translateX(-50%);
-
   width: 65%;
   height: 1px;
-
   background: linear-gradient(
     90deg,
     transparent,
@@ -51,9 +47,16 @@
     transparent
   );
 }
+
 /* ========================= */
-/* LOGO */
+/* LOGO                      */
 /* ========================= */
+h1 {
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  transition: font-size 0.3s ease;
+}
+
 .logo span {
   display: inline-block;
   transition: transform 0.4s ease-out, letter-spacing 0.6s ease-out;
@@ -70,17 +73,14 @@
   color: inherit;
   outline: none;
 }
-h1 {
-  color: var(--color-primary);
-  transition: font-size 0.3s ease;
-}
+
 /* ========================= */
-/* NAV */
+/* NAV                       */
 /* ========================= */
 nav ul {
   list-style: none;
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   margin: 0;
   padding: 0;
 }
@@ -99,7 +99,8 @@ nav ul li .nav-link {
   text-decoration: none;
   color: var(--color-main);
   font-weight: 500;
-  padding: 6px 0;
+  font-size: 0.85rem;
+  padding: 4px 0;
   cursor: pointer;
   transition: transform 0.3s ease, color 0.3s ease;
   outline: none;
@@ -149,7 +150,7 @@ li:has(.nav-logout) {
 }
 
 /* ========================= */
-/* ANIMATIONS coins */
+/* ANIMATIONS coins          */
 /* ========================= */
 nav ul li .nav-link::before,
 nav ul li .nav-link::after {
@@ -162,7 +163,6 @@ nav ul li .nav-link::after {
   transition: transform 0.7s ease, opacity 0.4s ease;
 }
 
-/* positions */
 nav ul li .nav-link::before {
   top: -4px;
   left: -4px;
@@ -177,7 +177,6 @@ nav ul li .nav-link::after {
   border-right: 2px solid;
 }
 
-/* hover + focus */
 nav ul li .nav-link:hover::before,
 nav ul li .nav-link:hover::after,
 nav ul li .nav-link:focus-visible::before,
@@ -193,23 +192,31 @@ nav ul li .nav-link:focus-visible {
 }
 
 /* ========================= */
-/* RESPONSIVE MOBILE */
+/* DESKTOP (min-width: 601px) */
 /* ========================= */
-@media (max-width: 600px) {
+@media (min-width: 601px) {
   .header {
-    padding: 0.9rem 1rem;
+    padding: 1rem 2rem;
   }
 
-  .header h1 {
-    font-size: 1.1rem;
+  .header--small {
+    padding: 0.4rem 2rem;
+  }
+
+  .header--small h1 {
+    font-size: 1.2rem;
+  }
+
+  h1 {
+    font-size: unset;
   }
 
   nav ul {
-    gap: 1rem;
+    gap: 2rem;
   }
 
   nav ul li .nav-link {
-    font-size: 0.85rem;
-    padding: 4px 0;
+    font-size: unset;
+    padding: 6px 0;
   }
 }

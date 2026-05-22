@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import type { RequestHandler, Response } from "express";
-import type { AuthRequest } from "../midllewares/verifyToken";
+import type { AuthRequest } from "../middlewares/verifyToken";
 import userRepository from "../models/userRepository";
 import type { IUser } from "../types/IUser";
 

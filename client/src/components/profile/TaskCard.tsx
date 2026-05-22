@@ -3,28 +3,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useState } from "react";
 import { FiCalendar, FiCheck, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
 import type { ITask, TaskStatus } from "../../../../server/src/types/ITask";
+import { getAvatarColor, getInitials } from "../../utils/avatar";
+import { TASK_STATUSES, TASK_STATUS_LABELS } from "../../utils/taskStatus";
 import type { Assignee } from "./Column";
-
-const AVATAR_COLORS = [
-  "#fc7753",
-  "#3498db",
-  "#368d28",
-  "#9b59b6",
-  "#f39c12",
-  "#e74c3c",
-  "#1abc9c",
-  "#fba875",
-];
-
-const getAvatarColor = (id: number) => AVATAR_COLORS[id % AVATAR_COLORS.length];
-
-const getInitials = (name: string) =>
-  name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
 
 const MAX_VISIBLE_AVATARS = 3;
 
@@ -76,11 +57,10 @@ export default function TaskCard({
     setIsEditing(false);
   };
 
-  const statusOptions = [
-    { status: "todo" as TaskStatus, label: "À faire" },
-    { status: "doing" as TaskStatus, label: "En cours" },
-    { status: "done" as TaskStatus, label: "Terminé" },
-  ];
+  const statusOptions = TASK_STATUSES.map((s) => ({
+    status: s,
+    label: TASK_STATUS_LABELS[s],
+  }));
 
   const visibleAssignees = assignees.slice(0, MAX_VISIBLE_AVATARS);
   const overflow = assignees.length - MAX_VISIBLE_AVATARS;

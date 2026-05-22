@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import type { AuthRequest } from "../midllewares/verifyToken";
+import type { AuthRequest } from "../middlewares/verifyToken";
 import projectRepository from "../models/projectRepository";
 import taskRepository from "../models/taskRepository";
 import type { ITask } from "../types/ITask";

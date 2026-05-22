@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import type { AuthRequest } from "../midllewares/verifyToken";
+import type { AuthRequest } from "../middlewares/verifyToken";
 import userRepository from "../models/userRepository";
 
 dotenv.config();

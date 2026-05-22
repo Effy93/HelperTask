@@ -1,5 +1,5 @@
 import { useState } from "react";
-import logoAddCollab from "../assets/images/btn-addCollab.png";
+import logoAddCollab from "../assets/images/btn-addCollab.webp";
 
 const API = import.meta.env.VITE_API_URL as string;
 

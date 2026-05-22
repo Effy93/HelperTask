@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logoutImg from "../../assets/images/logout.png";
-import profileImg from "../../assets/images/profile.png";
+import logoutImg from "../../assets/images/logout.webp";
+import profileImg from "../../assets/images/profile.webp";
 import { useAuth } from "../../context/AuthContext";
 import "./header.css";
 

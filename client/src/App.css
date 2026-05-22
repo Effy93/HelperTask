@@ -17,7 +17,7 @@ body {
   color: var(--color-text-main);
   min-height: 100vh;
   background-color: #f5e3d8;
-  background-image: url(./assets/images/bg.png);
+  background-image: url(./assets/images/bg.webp);
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;

@@ -7,11 +7,12 @@ const router = express.Router();
 /* ************************************************************************* */
 
 import authController from "./controllers/authController";
+import collaboratorController from "./controllers/collaboratorController";
 import invitationController from "./controllers/invitationController";
 import projectController from "./controllers/projectController";
 import taskController from "./controllers/taskController";
 import userController from "./controllers/userController";
-import verifyToken from "./midllewares/verifyToken";
+import verifyToken from "./middlewares/verifyToken";
 
 /* ************************************************************************* */
 // USER
@@ -41,22 +42,22 @@ router.delete("/api/projects/:id", verifyToken, projectController.destroy);
 router.get(
   "/api/projects/:id/collaborators",
   verifyToken,
-  projectController.getCollaborators,
+  collaboratorController.getCollaborators,
 );
 router.post(
   "/api/projects/:id/collaborators",
   verifyToken,
-  projectController.addCollaborator,
+  collaboratorController.addCollaborator,
 );
 router.put(
   "/api/projects/:id/collaborators/:userId",
   verifyToken,
-  projectController.updateCollaboratorRole,
+  collaboratorController.updateCollaboratorRole,
 );
 router.delete(
   "/api/projects/:id/collaborators/:userId",
   verifyToken,
-  projectController.removeCollaborator,
+  collaboratorController.removeCollaborator,
 );
 
 /* ************************************************************************* */

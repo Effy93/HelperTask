@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import supertest from "supertest";
 import app from "../../src/app";
-import type { AuthRequest } from "../../src/midllewares/verifyToken";
+import type { AuthRequest } from "../../src/middlewares/verifyToken";
 import projectRepository from "../../src/models/projectRepository";
 
 // Tests d’intégration des routes Projects (couche controller -> router.ts)
@@ -15,7 +15,7 @@ import projectRepository from "../../src/models/projectRepository";
 
 // Préparation globale : simulation des modules nécessaires
 // mock du middleware verifyToken = remplace le fichier , bypasser (contourner) l’auth pour pouvoir tester les routes.
-jest.mock("../../src/midllewares/verifyToken", () => {
+jest.mock("../../src/middlewares/verifyToken", () => {
   return (req: Request, _res: Response, next: NextFunction) => {
     (req as AuthRequest).user = {
       id: 1,

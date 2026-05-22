@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import type { RequestHandler } from "express";
-import type { AuthRequest } from "../midllewares/verifyToken";
+import type { AuthRequest } from "../middlewares/verifyToken";
 import invitationRepository from "../models/invitationRepository";
 import projectRepository from "../models/projectRepository";
 import userRepository from "../models/userRepository";

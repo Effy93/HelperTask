@@ -5,7 +5,9 @@
 .board-page {
   display: flex;
   flex-direction: column;
+  flex: 1;
   max-width: 1400px;
+  width: 100%;
   margin: 40px auto;
   padding: 20px;
 }
@@ -1243,7 +1245,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  margin-top: 32px;
+  margin-top: auto;
+  padding-top: 32px;
 }
 
 .board-info .sidebar-section {
