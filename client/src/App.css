@@ -12,7 +12,7 @@ html {
 }
 
 body {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family: var(--font-texte);
   line-height: 1.5;
   color: var(--color-text-main);
   min-height: 100vh;
@@ -37,8 +37,8 @@ main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-top: 55px;
-  min-height: calc(100vh - 55px);
+  padding-top: 80px;
+  min-height: calc(100vh - 80px);
 }
 
 /* Liens */
@@ -68,6 +68,19 @@ select {
   font: inherit;
   border: none;
   outline: none;
+}
+
+/* Titres */
+h1,
+h2 {
+  font-family: var(--font-titre);
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-texte);
 }
 
 /* Images */

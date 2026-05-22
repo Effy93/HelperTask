@@ -19,6 +19,7 @@ import verifyToken from "./midllewares/verifyToken";
 
 router.post("/api/users", userController.add);
 router.get("/api/users", userController.browse);
+router.put("/api/users/me", verifyToken, userController.edit);
 
 /* ************************************************************************* */
 // AUTH

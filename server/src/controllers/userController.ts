@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
-import type { RequestHandler } from "express";
+import type { RequestHandler, Response } from "express";
+import type { AuthRequest } from "../midllewares/verifyToken";
 import userRepository from "../models/userRepository";
 import type { IUser } from "../types/IUser";
 
@@ -68,9 +69,61 @@ const add: RequestHandler = async (req, res) => {
   }
 };
 
-const edit: RequestHandler = async (req, res, next) => {
+const edit = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-  } catch (error) {}
+    const currentUser = req.user;
+    if (!currentUser) {
+      res.status(401).json({ message: "Non authentifié" });
+      return;
+    }
+
+    const name = String(req.body.name ?? "").trim();
+    const email = String(req.body.email ?? "")
+      .trim()
+      .toLowerCase();
+    const newPassword = req.body.password ? String(req.body.password) : null;
+
+    if (!name || !email) {
+      res.status(400).json({ message: "Nom et email requis" });
+      return;
+    }
+    if (name.length > 100) {
+      res.status(400).json({ message: "Nom trop long (100 caractères max)" });
+      return;
+    }
+    if (!EMAIL_REGEX.test(email) || email.length > 255) {
+      res.status(400).json({ message: "Email invalide" });
+      return;
+    }
+    if (
+      newPassword !== null &&
+      (newPassword.length < 8 || newPassword.length > 100)
+    ) {
+      res.status(400).json({ message: "Mot de passe : 8 à 100 caractères" });
+      return;
+    }
+
+    if (email !== currentUser.email) {
+      const existing = await userRepository.getByEmail(email);
+      if (existing.length > 0) {
+        res.status(409).json({ message: "Email déjà utilisé" });
+        return;
+      }
+    }
+
+    const hashedPassword = newPassword
+      ? await bcrypt.hash(newPassword, 10)
+      : currentUser.password;
+
+    await userRepository.update(currentUser.id, {
+      name,
+      email,
+      password: hashedPassword,
+    });
+    res.json({ user: { id: currentUser.id, name, email } });
+  } catch {
+    res.status(500).json({ message: "Erreur serveur" });
+  }
 };
 
 const destroy: RequestHandler = async (req, res, next) => {

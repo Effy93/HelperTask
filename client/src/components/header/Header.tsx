@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import logoutImg from "../../assets/images/logout.png";
+import profileImg from "../../assets/images/profile.png";
 import { useAuth } from "../../context/AuthContext";
 import "./header.css";
 
@@ -60,17 +62,22 @@ export default function Header() {
           {user && (
             <>
               <li>
-                <Link to="/profile" className="nav-link">
-                  Espace perso
+                <Link
+                  to="/profile"
+                  className="nav-icon-link"
+                  aria-label="Espace perso"
+                >
+                  <img src={profileImg} alt="" />
                 </Link>
               </li>
               <li>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="nav-link"
+                  className="nav-logout"
+                  aria-label="Se déconnecter"
                 >
-                  Logout
+                  <img src={logoutImg} alt="" />
                 </button>
               </li>
             </>

@@ -9,14 +9,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.3s ease;
-  /* background: rgba(243, 237, 247, 0.283); */
+  transition: padding 0.3s ease, box-shadow 0.3s ease;
   border-bottom: 1px solid rgba(252, 119, 83, 0.35);
   background: rgba(255, 249, 245, 0.48);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: 0 2px 20px rgba(252, 119, 83, 0.08);
-  padding: 0.6rem 2rem;
+  padding: 1rem 2rem;
+}
+
+.header--small {
+  padding: 0.4rem 2rem;
+  box-shadow: 0 2px 14px rgba(252, 119, 83, 0.12);
+}
+
+.header--small h1 {
+  font-size: 1.2rem;
+}
+
+.header--small .nav-icon-link,
+.header--small .nav-logout {
+  transform: scale(0.72);
 }
 
 .header::after {
@@ -59,6 +72,7 @@
 }
 h1 {
   color: var(--color-primary);
+  transition: font-size 0.3s ease;
 }
 /* ========================= */
 /* NAV */
@@ -91,15 +105,47 @@ nav ul li .nav-link {
   outline: none;
 }
 
-/* RESET spécifique pour button */
-nav ul li button.nav-link {
+/* Icônes nav (profile + logout) */
+li:has(.nav-icon-link),
+li:has(.nav-logout) {
+  margin-left: -1.6rem;
+}
+
+.nav-icon-link,
+.nav-logout {
   all: unset;
-  position: relative;
-  display: inline-block;
   cursor: pointer;
-  color: var(--color-main);
-  font-weight: 500;
-  padding: 6px 0;
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.nav-icon-link img,
+.nav-logout img {
+  width: 80px;
+  height: auto;
+  display: block;
+  filter: saturate(0.85) brightness(1.05) opacity(0.92);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.nav-icon-link:focus-visible,
+.nav-logout:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.nav-icon-link:hover img,
+.nav-logout:hover img {
+  transform: translateY(-3px) scale(1.12);
+  filter: saturate(0.9) brightness(1.1) opacity(1);
+}
+
+.nav-icon-link:active img,
+.nav-logout:active img {
+  transform: scale(0.93);
+  filter: saturate(0.85) brightness(1.05) opacity(0.92);
 }
 
 /* ========================= */
@@ -144,11 +190,6 @@ nav ul li .nav-link:hover,
 nav ul li .nav-link:focus-visible {
   color: var(--color-link);
   transform: translateY(-4px) scale(1.1);
-}
-
-nav ul li button.nav-link:hover,
-nav ul li button.nav-link:focus-visible {
-  color: var(--color-danger);
 }
 
 /* ========================= */
