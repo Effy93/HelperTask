@@ -4,7 +4,10 @@ import type { AuthRequest } from "../midllewares/verifyToken";
 import invitationRepository from "../models/invitationRepository";
 import projectRepository from "../models/projectRepository";
 import userRepository from "../models/userRepository";
-import { sendInvitationEmail } from "../services/emailService";
+import {
+  sendAddedDirectlyEmail,
+  sendInvitationEmail,
+} from "../services/emailService";
 
 const send: RequestHandler = async (req, res) => {
   try {
@@ -13,8 +16,7 @@ const send: RequestHandler = async (req, res) => {
     const email = String(req.body.email ?? "")
       .trim()
       .toLowerCase();
-    const role =
-      req.body.role === "product_owner" ? "product_owner" : "collaborator";
+    const role = "collaborator";
 
     if (!userId) {
       res.status(401).json({ message: "Non authentifié" });
@@ -62,6 +64,21 @@ const send: RequestHandler = async (req, res) => {
 
     const [inviter] = await userRepository.getById(userId);
 
+    const existingUsers = await userRepository.getByEmail(email);
+    if (existingUsers.length > 0) {
+      const targetUser = existingUsers[0];
+      await projectRepository.addCollaborator(projectId, targetUser.id, role);
+      await sendAddedDirectlyEmail({
+        to: email,
+        inviterName: inviter.name,
+        projectTitle: project.title,
+      });
+      res
+        .status(201)
+        .json({ message: "Collaborateur ajouté directement", type: "added" });
+      return;
+    }
+
     const token = crypto.randomBytes(32).toString("hex");
     const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
 
@@ -81,7 +98,7 @@ const send: RequestHandler = async (req, res) => {
       token,
     });
 
-    res.status(201).json({ message: "Invitation envoyée" });
+    res.status(201).json({ message: "Invitation envoyée", type: "invited" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erreur lors de l'envoi de l'invitation" });

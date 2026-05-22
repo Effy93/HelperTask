@@ -11,13 +11,13 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FiCalendar, FiUser, FiUsers } from "react-icons/fi";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 
 import type { ITask, TaskStatus } from "../../../server/src/types/ITask";
 
 const API = import.meta.env.VITE_API_URL as string;
 import logoAddCollab from "../assets/images/btn-addCollab.png";
-import btnRetour from "../assets/images/btn-retour_projets.png";
+import BackButton from "../components/BackButton";
 import InviteCollaboratorModal from "../components/InviteCollaboratorModal";
 import Column from "../components/profile/Column";
 import type { Assignee } from "../components/profile/Column";
@@ -571,10 +571,10 @@ export default function Board() {
   return (
     <div className="board-page">
       <div className="profile-hero">
-        <Link to="/profile" className="back-link">
-          <img src={btnRetour} alt="Retour aux projets" />
-        </Link>
-        <div className="hero-center">
+        <div className="hero-header">
+          <BackButton to="/profile" />
+        </div>
+        <div className="hero-body">
           <h1>{project.title}</h1>
           {project.description && <p>{project.description}</p>}
           {collaborators.length > 0 && (
@@ -594,13 +594,15 @@ export default function Board() {
             </div>
           )}
         </div>
-        <button
-          type="button"
-          className="add-task-toggle btn-animated"
-          onClick={() => (showTaskPanel ? closeTaskPanel() : openTaskPanel())}
-        >
-          <span>+ Nouvelle tâche</span>
-        </button>
+        <div className="hero-footer">
+          <button
+            type="button"
+            className="add-task-toggle btn-animated"
+            onClick={() => (showTaskPanel ? closeTaskPanel() : openTaskPanel())}
+          >
+            <span>+ Nouvelle tâche</span>
+          </button>
+        </div>
       </div>
 
       <div className="board-layout">

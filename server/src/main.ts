@@ -14,15 +14,6 @@ import app from "./app";
 const port = process.env.APP_PORT;
 
 // Start the server and listen on the specified port
-app
-  .listen(port, () => {
-    console.info(`Server express listening on port ${port}`);
-    try {
-      printDBInfo();
-    } catch (e) {
-      console.log("DB debug failed");
-    }
-  })
-  .on("error", (err: Error) => {
-    console.error("Error:", err.message);
-  });
+app.listen(port, () => {
+  console.info(`Server express listening on port ${port}`);
+});

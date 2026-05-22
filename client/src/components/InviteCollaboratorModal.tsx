@@ -15,11 +15,8 @@ export default function InviteCollaboratorModal({
   onSuccess,
 }: Props) {
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"collaborator" | "product_owner">(
-    "collaborator",
-  );
+  const [addedType, setAddedType] = useState<"added" | "invited" | null>(null);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -34,14 +31,14 @@ export default function InviteCollaboratorModal({
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), role }),
+        body: JSON.stringify({ email: email.trim() }),
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.message ?? "Erreur lors de l'envoi.");
         return;
       }
-      setSuccess(true);
+      setAddedType(data.type ?? "invited");
       onSuccess();
       setTimeout(onClose, 2000);
     } catch {
@@ -82,9 +79,11 @@ export default function InviteCollaboratorModal({
           </div>
         </div>
 
-        {success ? (
+        {addedType ? (
           <p className="invite-success">
-            Invitation envoyée ! Un email a été transmis.
+            {addedType === "added"
+              ? "Collaborateur ajouté directement !"
+              : "Invitation envoyée ! Un email a été transmis."}
           </p>
         ) : (
           <div className="invite-modal-body">
@@ -100,19 +99,6 @@ export default function InviteCollaboratorModal({
                   setError("");
                 }}
               />
-            </label>
-            <label className="invite-label">
-              Rôle
-              <select
-                className="invite-input"
-                value={role}
-                onChange={(e) =>
-                  setRole(e.target.value as "collaborator" | "product_owner")
-                }
-              >
-                <option value="collaborator">Collaborateur</option>
-                <option value="product_owner">Product Owner</option>
-              </select>
             </label>
             {error && <p className="invite-error">{error}</p>}
             <div className="invite-modal-actions">

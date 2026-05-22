@@ -48,3 +48,48 @@ export async function sendInvitationEmail(params: {
     throw new Error(`Brevo error: ${JSON.stringify(err)}`);
   }
 }
+
+export async function sendAddedDirectlyEmail(params: {
+  to: string;
+  inviterName: string;
+  projectTitle: string;
+}) {
+  const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { name: "TaskHelper", email: "no-reply@taskhelper.app" },
+      to: [{ email: params.to }],
+      subject: `${params.inviterName} vous a ajouté sur "${params.projectTitle}"`,
+      htmlContent: `
+        <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#fff;border-radius:16px;">
+          <h2 style="color:#fc7753;margin-top:0;">Vous avez été ajouté à un projet 🎉</h2>
+          <p style="color:#2d3748;font-size:1rem;">
+            <strong>${params.inviterName}</strong> vous a ajouté en tant que collaborateur sur le projet
+            <strong>"${params.projectTitle}"</strong> dans TaskHelper.
+          </p>
+          <p style="color:#718096;font-size:0.9rem;">
+            Connectez-vous à votre compte pour accéder au projet.
+          </p>
+          <a href="${FRONTEND_URL}"
+            style="display:inline-block;background:#fc7753;color:#fff;padding:13px 30px;
+                   border-radius:10px;text-decoration:none;font-weight:700;font-size:0.95rem;
+                   margin-top:8px;">
+            Accéder à TaskHelper
+          </a>
+          <p style="color:#a0aec0;font-size:0.8rem;margin-top:28px;border-top:1px solid #eee;padding-top:16px;">
+            Si vous pensez que c'est une erreur, contactez l'administrateur du projet.
+          </p>
+        </div>
+      `,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(`Brevo error: ${JSON.stringify(err)}`);
+  }
+}
