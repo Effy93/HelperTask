@@ -1,3 +1,4 @@
+import "./profile-hero.css";
 import { useState } from "react";
 import { FiEdit2 } from "react-icons/fi";
 import type { UserResponse } from "../../services/userService";

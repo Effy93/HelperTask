@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { FiEye, FiEyeOff, FiLogOut, FiUser } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import logoutImg from "../../assets/images/logout.webp";
 import profileImg from "../../assets/images/profile.webp";
 import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../hooks/useTheme";
 import "./header.css";
 
 const API = import.meta.env.VITE_API_URL as string;
@@ -11,6 +13,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
+  const { isDsy, toggleTheme } = useTheme();
 
   const logoText = "Task Helper";
 
@@ -51,6 +54,21 @@ export default function Header() {
 
       <nav>
         <ul>
+          <li>
+            <button
+              type="button"
+              className={`nav-theme-toggle${isDsy ? " nav-theme-toggle--active" : ""}`}
+              onClick={toggleTheme}
+              aria-pressed={isDsy}
+              aria-label={
+                isDsy ? "Passer en mode standard" : "Passer en mode dys"
+              }
+              data-tooltip={isDsy ? "Mode standard" : "Mode dys"}
+            >
+              {isDsy ? <FiEyeOff /> : <FiEye />}
+            </button>
+          </li>
+
           {!user && (
             <li>
               <Link to="/login" className="nav-link">
@@ -66,8 +84,13 @@ export default function Header() {
                   to="/profile"
                   className="nav-icon-link"
                   aria-label="Espace perso"
+                  data-tooltip="Espace perso"
                 >
-                  <img src={profileImg} alt="" />
+                  {isDsy ? (
+                    <FiUser className="nav-icon-dsy" />
+                  ) : (
+                    <img src={profileImg} alt="" />
+                  )}
                 </Link>
               </li>
               <li>
@@ -76,8 +99,13 @@ export default function Header() {
                   onClick={handleLogout}
                   className="nav-logout"
                   aria-label="Se déconnecter"
+                  data-tooltip="Se déconnecter"
                 >
-                  <img src={logoutImg} alt="" />
+                  {isDsy ? (
+                    <FiLogOut className="nav-icon-dsy" />
+                  ) : (
+                    <img src={logoutImg} alt="" />
+                  )}
                 </button>
               </li>
             </>

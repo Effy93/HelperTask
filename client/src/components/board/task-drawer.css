@@ -1,0 +1,228 @@
+/* ========================= */
+/* TASK DRAWER               */
+/* ========================= */
+
+.task-drawer {
+  width: 100%;
+  max-width: 320px;
+  background: var(--glass-l1-bg);
+  backdrop-filter: var(--glass-l1-blur);
+  -webkit-backdrop-filter: var(--glass-l1-blur);
+  border-left: 1px solid var(--glass-l1-border);
+  border-radius: 18px 0 0 18px;
+  padding: 18px;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  transform: translateX(110%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.task-drawer.open {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ========================= */
+/* DRAWER HEADER / BODY      */
+/* ========================= */
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.drawer-header h2 {
+  margin: 0;
+}
+
+.drawer-header p {
+  margin: 6px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
+.drawer-close {
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.drawer-close:hover {
+  color: var(--color-text);
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.drawer-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.drawer-body label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.drawer-body input,
+.drawer-body textarea,
+.drawer-body select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--color-text);
+  min-height: 44px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.drawer-body input:focus,
+.drawer-body textarea:focus,
+.drawer-body select:focus {
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.72);
+  outline: none;
+}
+
+.drawer-body textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.drawer-body select {
+  cursor: pointer;
+}
+
+.drawer-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* ========================= */
+/* DRAWER — ASSIGNEES        */
+/* ========================= */
+
+.drawer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-field-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.drawer-field select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--color-text);
+  min-height: 44px;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+}
+
+.drawer-field select:focus {
+  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.72);
+  outline: none;
+}
+
+.assignee-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.assignee-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(252, 119, 83, 0.1);
+  border: 1px solid rgba(252, 119, 83, 0.25);
+  border-radius: 20px;
+  padding: 3px 8px 3px 4px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.assignee-pill-avatar {
+  width: 22px;
+  height: 22px;
+  font-size: 0.58rem;
+}
+
+.assignee-pill-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.assignee-pill-remove:hover {
+  color: var(--color-danger);
+}
+
+/* ========================= */
+/* MEDIA QUERIES             */
+/* ========================= */
+
+@media (min-width: 1024px) {
+  .task-drawer {
+    position: sticky;
+    top: 20px;
+    left: auto;
+    bottom: auto;
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    overflow: hidden;
+    transform: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: width 0.25s ease, opacity 0.25s ease, padding 0.25s ease;
+    order: 3;
+  }
+
+  .task-drawer.open {
+    width: 300px;
+    min-width: 300px;
+    padding: 18px;
+    overflow: visible;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

@@ -19,7 +19,7 @@ body {
   background-color: #f5e3d8;
   background-image: url(./assets/images/bg.webp);
   background-size: cover;
-  background-position: center top;
+  background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
@@ -28,9 +28,47 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(255, 248, 244, 0.35);
+  background: rgba(255, 248, 244, 0.22);
   pointer-events: none;
   z-index: 0;
+}
+
+[data-theme="dsy"] body {
+  background-color: #f0ece8;
+  background-image: url(./assets/images/bg-D2.png);
+  font-size: 17px;
+  line-height: 1.75;
+  letter-spacing: 0.018em;
+  word-spacing: 0.06em;
+}
+
+[data-theme="dsy"] body::before {
+  background: rgba(240, 236, 232, 0.1);
+}
+
+[data-theme="dsy"] h1,
+[data-theme="dsy"] h2 {
+  font-family: var(--font-texte);
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+}
+
+[data-theme="dsy"] h3,
+[data-theme="dsy"] h4,
+[data-theme="dsy"] h5,
+[data-theme="dsy"] h6 {
+  letter-spacing: 0.025em;
+  line-height: 1.4;
+}
+
+[data-theme="dsy"] p,
+[data-theme="dsy"] label,
+[data-theme="dsy"] button,
+[data-theme="dsy"] input,
+[data-theme="dsy"] select,
+[data-theme="dsy"] textarea {
+  font-size: 1rem;
+  line-height: 1.75;
 }
 
 main {
@@ -147,6 +185,46 @@ img {
 /* ========================= */
 /* Accessibilité             */
 /* ========================= */
+
+/* Tooltip (data-tooltip) — hover + focus clavier */
+
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.92);
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 200;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Tooltips nav header : s'affichent sous les icônes */
+.nav-icon-link[data-tooltip]::after,
+.nav-logout[data-tooltip]::after {
+  bottom: auto;
+  top: calc(100% + 8px);
+}
 
 .sr-only {
   position: absolute;

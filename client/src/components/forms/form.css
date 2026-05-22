@@ -57,7 +57,7 @@ form {
   color: var(--color-text-secondary);
   padding: 0 5px;
   transition: transform 0.3s ease, font-size 0.3s ease, color 0.3s ease;
-  background: rgba(255, 249, 245, 0.85);
+  background: transparent;
   border-radius: 4px;
 }
 
@@ -81,9 +81,10 @@ form {
 
 .input-group input:focus ~ label,
 .input-group input:valid ~ label {
-  transform: translateY(-175%);
-  font-size: 14px;
+  transform: translateY(-205%);
+  font-size: 12px;
   color: var(--color-primary);
+  background: var(--label-float-bg);
 }
 
 button[type="submit"] {

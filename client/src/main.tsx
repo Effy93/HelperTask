@@ -5,6 +5,8 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import "./App.css";
 import "./styles/palette.css";
+import "./styles/buttons.css";
+import "./styles/invite.css";
 
 import App from "./App";
 import ProtectedRoute from "./components/ProtectedRoute";

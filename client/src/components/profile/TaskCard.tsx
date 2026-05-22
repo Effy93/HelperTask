@@ -1,3 +1,4 @@
+import "./task-card.css";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useState } from "react";
@@ -77,9 +78,19 @@ export default function TaskCard({
         {isEditing ? (
           <div className="task-card-editable">
             <div className="input-row">
+              <label htmlFor={`task-title-${task.id}`} className="sr-only">
+                Titre de la tâche
+              </label>
               <input
+                id={`task-title-${task.id}`}
                 value={editTitle}
                 onChange={(event) => setEditTitle(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.stopPropagation();
+                    saveChanges();
+                  }
+                }}
               />
               <button
                 type="button"
@@ -88,6 +99,8 @@ export default function TaskCard({
                   event.stopPropagation();
                   saveChanges();
                 }}
+                aria-label="Valider les modifications"
+                data-tooltip="Valider"
               >
                 <FiCheck />
               </button>
@@ -100,12 +113,18 @@ export default function TaskCard({
                   setEditTitle(task.title);
                   setEditContent(task.content);
                 }}
+                aria-label="Annuler les modifications"
+                data-tooltip="Annuler"
               >
                 <FiX />
               </button>
             </div>
             <div className="input-row">
+              <label htmlFor={`task-content-${task.id}`} className="sr-only">
+                Description de la tâche
+              </label>
               <input
+                id={`task-content-${task.id}`}
                 value={editContent}
                 onChange={(event) => setEditContent(event.target.value)}
               />

@@ -1,3 +1,4 @@
+import "./task-drawer.css";
 import type { ITask, TaskStatus } from "../../../../server/src/types/ITask";
 import type { Collaborator } from "../../services/collaboratorService";
 import { getAvatarColor, getInitials } from "../../utils/avatar";
@@ -63,7 +64,13 @@ export default function TaskDrawer({
         </button>
       </div>
 
-      <div className="drawer-body">
+      <form
+        className="drawer-body"
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit();
+        }}
+      >
         <label>
           Titre
           <input
@@ -98,7 +105,9 @@ export default function TaskDrawer({
         </label>
 
         <div className="drawer-field">
-          <span className="drawer-field-label">Assignés</span>
+          <span id="assignees-label" className="drawer-field-label">
+            Assignés
+          </span>
           {assigneeIds.length > 0 && (
             <div className="assignee-pills">
               {assigneeIds.map((uid) => {
@@ -129,6 +138,8 @@ export default function TaskDrawer({
           {available.length > 0 && (
             <select
               value=""
+              aria-labelledby="assignees-label"
+              aria-label="Ajouter un collaborateur"
               onChange={(e) => {
                 const id = Number(e.target.value);
                 if (id) onAddAssignee(id);
@@ -157,11 +168,11 @@ export default function TaskDrawer({
           <button type="button" className="cancel-btn" onClick={onClose}>
             Annuler
           </button>
-          <button type="button" className="primary-btn" onClick={onSubmit}>
+          <button type="submit" className="primary-btn">
             {editingTask ? "Enregistrer" : "Créer la tâche"}
           </button>
         </div>
-      </div>
+      </form>
     </aside>
   );
 }

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import logoAddCollab from "../assets/images/btn-addCollab.webp";
 import { useAuth } from "../context/AuthContext";
-import "../styles/profile.css";
 
 const API = import.meta.env.VITE_API_URL as string;
 

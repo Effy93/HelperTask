@@ -87,7 +87,23 @@ export function useTasks(projectId: number) {
     updates: Array<{ id: number; status: TaskStatus; position: number }>,
   ) => {
     if (updates.length === 0) return;
-    await reorderTasks(updates);
+
+    setTasks((prev) => {
+      const next = [...prev];
+      for (const u of updates) {
+        const idx = next.findIndex((t) => t.id === u.id);
+        if (idx !== -1) {
+          next[idx] = { ...next[idx], status: u.status, position: u.position };
+        }
+      }
+      return next;
+    });
+
+    try {
+      await reorderTasks(updates);
+    } catch {
+      await refresh();
+    }
   };
 
   return {

@@ -1,7 +1,16 @@
+import "./project-card.css";
 import { useState } from "react";
-import { FiCheck, FiEdit2, FiFolder, FiTrash2, FiX } from "react-icons/fi";
+import {
+  FiCheck,
+  FiEdit2,
+  FiFolder,
+  FiTrash2,
+  FiUserPlus,
+  FiX,
+} from "react-icons/fi";
 import { Link } from "react-router-dom";
 import logoAddCollab from "../../assets/images/btn-addCollab.webp";
+import { useTheme } from "../../hooks/useTheme";
 import type { Collaborator } from "../../services/collaboratorService";
 import type { Project } from "../../services/projectService";
 import { getAvatarColor, getInitials } from "../../utils/avatar";
@@ -21,6 +30,7 @@ export default function ProjectCard({
   onDelete,
   onInvite,
 }: Props) {
+  const { isDsy } = useTheme();
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(project.title);
   const [editDescription, setEditDescription] = useState(project.description);
@@ -44,15 +54,22 @@ export default function ProjectCard({
       {editing ? (
         <div className="project-card-edit-form">
           <div className="input-row">
+            <label htmlFor={`project-title-${project.id}`} className="sr-only">
+              Nom du projet
+            </label>
             <input
+              id={`project-title-${project.id}`}
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
               placeholder="Nom du projet"
             />
             <button
               type="button"
               className="icon-btn icon-success"
               onClick={handleSave}
+              aria-label="Valider les modifications"
+              data-tooltip="Valider"
             >
               <FiCheck />
             </button>
@@ -60,12 +77,18 @@ export default function ProjectCard({
               type="button"
               className="icon-btn icon-danger"
               onClick={() => setEditing(false)}
+              aria-label="Annuler les modifications"
+              data-tooltip="Annuler"
             >
               <FiX />
             </button>
           </div>
           <div className="input-row">
+            <label htmlFor={`project-desc-${project.id}`} className="sr-only">
+              Description du projet
+            </label>
             <input
+              id={`project-desc-${project.id}`}
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
               placeholder="Description"
@@ -75,16 +98,10 @@ export default function ProjectCard({
       ) : (
         <>
           <div className="project-card-header">
-            <Link
-              to={`/project/${project.id}`}
-              className="project-card-folder-wrap"
-            >
-              <FiFolder className="project-card-folder" />
-            </Link>
-            <Link
-              to={`/project/${project.id}`}
-              className="project-card-title-link"
-            >
+            <Link to={`/project/${project.id}`} className="project-card-link">
+              <span className="project-card-folder-wrap" aria-hidden="true">
+                <FiFolder className="project-card-folder" />
+              </span>
               <h3 className="project-title">{project.title}</h3>
             </Link>
             <div className="actions">
@@ -97,6 +114,8 @@ export default function ProjectCard({
                     setEditDescription(project.description);
                     setEditing(true);
                   }}
+                  aria-label={`Modifier le projet ${project.title}`}
+                  data-tooltip="Modifier"
                 >
                   <FiEdit2 />
                 </button>
@@ -106,6 +125,8 @@ export default function ProjectCard({
                   type="button"
                   className="icon-btn icon-danger"
                   onClick={handleDelete}
+                  aria-label={`Supprimer le projet ${project.title}`}
+                  data-tooltip="Supprimer"
                 >
                   <FiTrash2 />
                 </button>
@@ -146,7 +167,11 @@ export default function ProjectCard({
                   onClick={() => onInvite(project.id)}
                   title="Inviter un collaborateur"
                 >
-                  <img src={logoAddCollab} alt="Inviter un collaborateur" />
+                  {isDsy ? (
+                    <FiUserPlus className="add-collab-icon-dsy" />
+                  ) : (
+                    <img src={logoAddCollab} alt="Inviter un collaborateur" />
+                  )}
                 </button>
               )}
             </div>

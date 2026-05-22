@@ -18,7 +18,7 @@
   /* (panels, drawer, menus)   */
   /* ========================= */
 
-  --glass-l1-bg: rgba(255, 249, 245, 0.55);
+  --glass-l1-bg: rgba(255, 249, 245, 0.549);
   --glass-l1-blur: blur(20px);
   --glass-l1-border: rgba(255, 255, 255, 0.5);
   --glass-l1-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -41,6 +41,12 @@
   --glass-l3-bg: rgba(255, 255, 255, 0.45);
   --glass-l3-border: rgba(255, 255, 255, 0.55);
   --glass-l3-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+
+  /* ========================= */
+  /* Formulaires               */
+  /* ========================= */
+
+  --label-float-bg: rgb(250, 230, 220);
 
   /* ========================= */
   /* Surfaces (aliases)        */
@@ -108,4 +114,52 @@
 
   --btn-shadow: 0 5px 15px rgba(252, 119, 83, 0.4);
   --btn-shadow-sm: 0 4px 12px rgba(252, 119, 83, 0.35);
+}
+
+/* ========================= */
+/* Thème Daltonien (DSY)     */
+/* Cible : deuteranopie      */
+/* Palette Wong colorblind   */
+/* ========================= */
+
+[data-theme="dsy"] {
+  /* Couleurs principales */
+  --color-primary: #4a86a8;
+  --color-primary-hover: #35657f;
+
+  --color-accent: #3d8270;
+  --color-accent-soft: #d8e4c0;
+
+  --color-success: #4d8c7a;
+  --color-success-hover: #3a6e5f;
+
+  /* États UI */
+  --color-danger: #c07040;
+  --color-warning: #b08828;
+
+  /* Glass → surfaces opaques haute lisibilité */
+  --glass-l1-bg: rgba(248, 245, 242, 0.97);
+  --glass-l1-blur: none;
+  --glass-l1-border: rgba(74, 134, 168, 0.22);
+  --glass-l1-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  --glass-l2-bg: rgba(242, 238, 234, 0.96);
+  --glass-l2-blur: none;
+  --glass-l2-border: rgba(74, 134, 168, 0.18);
+  --glass-l2-shadow: 0 10px 35px rgba(0, 0, 0, 0.07);
+
+  --glass-l3-bg: rgba(253, 251, 249, 0.99);
+  --glass-l3-border: rgba(74, 134, 168, 0.18);
+  --glass-l3-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+
+  /* Formulaires */
+  --label-float-bg: rgb(240, 234, 228);
+
+  /* Legacy */
+  --glass-bg: var(--glass-l3-bg);
+  --glass-border: var(--glass-l3-border);
+
+  /* Boutons */
+  --btn-shadow: 0 5px 15px rgba(74, 134, 168, 0.4);
+  --btn-shadow-sm: 0 4px 12px rgba(74, 134, 168, 0.35);
 }

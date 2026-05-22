@@ -1,0 +1,169 @@
+/* ========================= */
+/* PROFILE HERO              */
+/* ========================= */
+
+.profile-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 28px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 216, 189, 0.4) 0%,
+    rgba(255, 255, 255, 0.22) 100%
+  );
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 24px rgba(252, 119, 83, 0.07);
+}
+
+.hero-header {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.hero-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  align-items: flex-start;
+}
+
+.hero-body h1 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.hero-body p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+}
+
+.hero-footer {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* ========================= */
+/* HERO WELCOME              */
+/* ========================= */
+
+.hero-welcome {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  text-transform: capitalize;
+}
+
+/* ========================= */
+/* HERO META                 */
+/* ========================= */
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-top: 8px;
+}
+
+.hero-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.5);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.hero-meta-item strong {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.hero-meta-icon {
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+
+/* ========================= */
+/* HERO EDIT BTN             */
+/* ========================= */
+
+.btn-edit-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: var(--btn-radius-pill);
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-edit-hero:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btn-edit-hero:active {
+  transform: scale(0.97);
+}
+
+/* ========================= */
+/* HERO EDIT FORM            */
+/* ========================= */
+
+.hero-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.hero-edit-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 420px;
+}
+
+.hero-edit-error {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-danger);
+}
+
+.hero-footer--actions {
+  gap: 10px;
+}
+
+/* ========================= */
+/* MEDIA QUERIES             */
+/* ========================= */
+
+@media (max-width: 767px) {
+  .profile-hero {
+    padding: 14px 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-body h1 {
+    font-size: 1.4rem;
+  }
+
+  .hero-body p {
+    font-size: 0.9rem;
+  }
+}

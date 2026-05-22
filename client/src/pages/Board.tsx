@@ -14,6 +14,7 @@ import { useTasks } from "../hooks/useTasks";
 import { fetchProject } from "../services/projectService";
 import { updateTask } from "../services/taskService";
 import "../styles/profile.css";
+import "../components/board/board.css";
 
 type Project = { id_project: number; title: string; description: string };
 

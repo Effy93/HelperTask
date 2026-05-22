@@ -1,0 +1,206 @@
+/* ========================= */
+/* INVITE MODAL              */
+/* ========================= */
+
+.invite-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.invite-modal {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  padding: 28px 28px 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.invite-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.invite-modal-close:hover {
+  background: rgba(15, 23, 42, 0.07);
+  color: var(--color-text);
+}
+
+.invite-modal-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.invite-modal-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.invite-modal-title {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.invite-modal-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.invite-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.invite-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.invite-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.invite-input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+.invite-error {
+  color: var(--color-danger);
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.invite-success {
+  text-align: center;
+  color: var(--color-success);
+  font-weight: 600;
+  padding: 16px 0;
+  font-size: 0.95rem;
+}
+
+.invite-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+/* ========================= */
+/* INVITE PAGE               */
+/* ========================= */
+
+.invite-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.invite-card {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+.invite-card-icon {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 16px;
+}
+
+.invite-card h1 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--color-text);
+}
+
+.invite-card-project {
+  font-size: 1rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.invite-card-meta {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.invite-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.invite-card-error {
+  color: var(--color-danger);
+  font-size: 0.85rem;
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+
+/* ========================= */
+/* INVITE BANNER (register)  */
+/* ========================= */
+
+.invite-banner {
+  background: rgba(252, 119, 83, 0.1);
+  border: 1px solid rgba(252, 119, 83, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  color: var(--color-text);
+  margin-bottom: 16px;
+  text-align: center;
+}

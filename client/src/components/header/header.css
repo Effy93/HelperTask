@@ -115,10 +115,29 @@ li:has(.nav-logout) {
 .nav-icon-link,
 .nav-logout {
   all: unset;
+  position: relative;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.nav-icon-dsy {
+  width: 26px;
+  height: 26px;
+  color: var(--color-primary);
+  transition: transform 0.3s ease, color 0.2s ease;
+  display: block;
+}
+
+.nav-icon-link:hover .nav-icon-dsy,
+.nav-logout:hover .nav-icon-dsy {
+  transform: translateY(-3px) scale(1.12);
+}
+
+.nav-icon-link:active .nav-icon-dsy,
+.nav-logout:active .nav-icon-dsy {
+  transform: scale(0.93);
 }
 
 .nav-icon-link img,
@@ -189,6 +208,76 @@ nav ul li .nav-link:hover,
 nav ul li .nav-link:focus-visible {
   color: var(--color-link);
   transform: translateY(-4px) scale(1.1);
+}
+
+/* ========================= */
+/* BOUTON THÈME              */
+/* ========================= */
+
+.nav-theme-toggle {
+  all: unset;
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: var(--color-primary);
+  transition: transform 0.3s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.nav-theme-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-theme-toggle:hover {
+  transform: translateY(-2px);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.nav-theme-toggle:active {
+  transform: scale(0.93);
+}
+
+.nav-theme-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+.nav-theme-toggle--active {
+  background: rgba(0, 114, 178, 0.1);
+  color: #0072b2;
+}
+
+.nav-theme-toggle--active:hover {
+  background: rgba(0, 114, 178, 0.18);
+}
+
+.header--small .nav-theme-toggle {
+  transform: scale(0.72);
+}
+
+/* DSY : header adapté */
+[data-theme="dsy"] .header {
+  border-bottom: 1px solid rgba(74, 134, 168, 0.3);
+  background: rgba(248, 245, 242, 0.88);
+  box-shadow: 0 2px 20px rgba(74, 134, 168, 0.08);
+}
+
+[data-theme="dsy"] .header--small {
+  box-shadow: 0 2px 14px rgba(74, 134, 168, 0.1);
+}
+
+[data-theme="dsy"] .header::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(74, 134, 168, 0.45),
+    transparent
+  );
 }
 
 /* ========================= */
