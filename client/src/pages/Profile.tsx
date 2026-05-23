@@ -10,8 +10,15 @@ import "../styles/profile.css";
 
 export default function Profile() {
   const { user, loading, setUser } = useAuth();
-  const { projects, projectCollaborators, refresh, create, update, remove } =
-    useProjects();
+  const {
+    projects,
+    projectCollaborators,
+    error,
+    refresh,
+    create,
+    update,
+    remove,
+  } = useProjects();
   const [inviteProjectId, setInviteProjectId] = useState<number | null>(null);
 
   if (loading) return <p>Chargement...</p>;
@@ -30,7 +37,15 @@ export default function Profile() {
         <section id="projects" className="profile-panel">
           <h2 className="panel-title">Mes projets</h2>
 
-          {projects.length === 0 && (
+          {error && (
+            <p className="projects-empty">
+              {error}{" "}
+              <button type="button" onClick={refresh}>
+                Réessayer
+              </button>
+            </p>
+          )}
+          {!error && projects.length === 0 && (
             <p className="projects-empty">Aucun projet pour l'instant.</p>
           )}
 

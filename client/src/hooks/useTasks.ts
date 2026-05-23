@@ -12,7 +12,10 @@ import {
   updateTask,
 } from "../services/taskService";
 
-export function useTasks(projectId: number) {
+export function useTasks(
+  projectId: number,
+  onError?: (message: string) => void,
+) {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [taskAssignees, setTaskAssignees] = useState<
     Record<number, Assignee[]>
@@ -102,6 +105,7 @@ export function useTasks(projectId: number) {
     try {
       await reorderTasks(updates);
     } catch {
+      onError?.("La mise à jour a échoué, veuillez réessayer.");
       await refresh();
     }
   };

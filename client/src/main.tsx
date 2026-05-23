@@ -3,10 +3,12 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
 import "./App.css";
 import "./styles/palette.css";
 import "./styles/buttons.css";
 import "./styles/invite.css";
+import "./styles/toast.css";
 
 import App from "./App";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -47,7 +49,9 @@ if (!rootElement) throw new Error("Root element not found");
 createRoot(rootElement).render(
   <StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
     </AuthProvider>
   </StrictMode>,
 );

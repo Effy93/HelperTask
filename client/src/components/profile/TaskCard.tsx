@@ -1,7 +1,7 @@
 import "./task-card.css";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiCalendar, FiCheck, FiEdit2, FiTrash2, FiX } from "react-icons/fi";
 import type { ITask, TaskStatus } from "../../../../server/src/types/ITask";
 import { getAvatarColor, getInitials } from "../../utils/avatar";
@@ -46,11 +46,18 @@ export default function TaskCard({
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task.title);
   const [editContent, setEditContent] = useState(task.content);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setEditTitle(task.title);
     setEditContent(task.content);
   }, [task.title, task.content]);
+
+  useEffect(() => {
+    if (isEditing) {
+      titleInputRef.current?.focus();
+    }
+  }, [isEditing]);
 
   const saveChanges = () => {
     if (!editTitle.trim()) return;
@@ -71,7 +78,7 @@ export default function TaskCard({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
+      {...(isEditing ? {} : listeners)}
       className={`task-card${isDragging ? " task-card--dragging" : ""}${isOverlay ? " task-card--overlay" : ""}`}
     >
       <div className="task-card-content">
@@ -82,6 +89,7 @@ export default function TaskCard({
                 Titre de la tâche
               </label>
               <input
+                ref={titleInputRef}
                 id={`task-title-${task.id}`}
                 value={editTitle}
                 onChange={(event) => setEditTitle(event.target.value)}
@@ -89,6 +97,11 @@ export default function TaskCard({
                   if (event.key === "Enter") {
                     event.stopPropagation();
                     saveChanges();
+                  } else if (event.key === "Escape") {
+                    event.stopPropagation();
+                    setIsEditing(false);
+                    setEditTitle(task.title);
+                    setEditContent(task.content);
                   }
                 }}
               />
@@ -127,6 +140,17 @@ export default function TaskCard({
                 id={`task-content-${task.id}`}
                 value={editContent}
                 onChange={(event) => setEditContent(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.stopPropagation();
+                    saveChanges();
+                  } else if (event.key === "Escape") {
+                    event.stopPropagation();
+                    setIsEditing(false);
+                    setEditTitle(task.title);
+                    setEditContent(task.content);
+                  }
+                }}
               />
             </div>
           </div>
@@ -179,6 +203,10 @@ export default function TaskCard({
                   key={option.status}
                   type="button"
                   className={`status-seg-btn status-seg-btn--${option.status}${task.status === option.status ? " active" : ""}`}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => {
+                    if (e.repeat) e.preventDefault();
+                  }}
                   onClick={(event) => {
                     event.stopPropagation();
                     onStatusChange?.(task.id, option.status);
@@ -195,6 +223,7 @@ export default function TaskCard({
               <button
                 type="button"
                 className="task-card-edit"
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={(event) => {
                   event.stopPropagation();
                   setIsEditing(true);
@@ -209,6 +238,7 @@ export default function TaskCard({
               <button
                 type="button"
                 className="task-card-delete"
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={(event) => {
                   event.stopPropagation();
                   onDelete(task.id);

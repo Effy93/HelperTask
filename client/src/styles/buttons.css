@@ -241,14 +241,6 @@
   pointer-events: none;
 }
 
-.add-collab-icon-dsy {
-  width: 22px;
-  height: 22px;
-  color: var(--color-primary);
-  pointer-events: none;
-  transition: color 0.2s ease;
-}
-
 .add-collab-btn:hover {
   transform: scale(1.18);
 }

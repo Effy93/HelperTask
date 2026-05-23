@@ -14,9 +14,17 @@ export function useProjects() {
   const [projectCollaborators, setProjectCollaborators] = useState<
     Record<number, Collaborator[]>
   >({});
+  const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
-    const list = await fetchProjects();
+    setError(null);
+    let list: Project[];
+    try {
+      list = await fetchProjects();
+    } catch {
+      setError("Impossible de charger les projets. Vérifiez votre connexion.");
+      return;
+    }
     setProjects(list);
 
     const results = await Promise.all(
@@ -54,5 +62,13 @@ export function useProjects() {
     await refresh();
   };
 
-  return { projects, projectCollaborators, refresh, create, update, remove };
+  return {
+    projects,
+    projectCollaborators,
+    error,
+    refresh,
+    create,
+    update,
+    remove,
+  };
 }

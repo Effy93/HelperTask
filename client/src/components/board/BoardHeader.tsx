@@ -48,6 +48,7 @@ export default function BoardHeader({
           type="button"
           className="add-task-toggle btn-animated"
           onClick={onNewTask}
+          data-tooltip="Nouvelle tâche"
         >
           <span>+ Nouvelle tâche</span>
         </button>

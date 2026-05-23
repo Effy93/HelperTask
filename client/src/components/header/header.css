@@ -260,6 +260,12 @@ nav ul li .nav-link:focus-visible {
   transform: scale(0.72);
 }
 
+/* DSY : annule la marge négative prévue pour le whitespace des images */
+[data-theme="dsy"] li:has(.nav-icon-link),
+[data-theme="dsy"] li:has(.nav-logout) {
+  margin-left: 0;
+}
+
 /* DSY : header adapté */
 [data-theme="dsy"] .header {
   border-bottom: 1px solid rgba(74, 134, 168, 0.3);

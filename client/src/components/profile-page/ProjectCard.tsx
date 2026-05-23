@@ -1,16 +1,8 @@
 import "./project-card.css";
 import { useState } from "react";
-import {
-  FiCheck,
-  FiEdit2,
-  FiFolder,
-  FiTrash2,
-  FiUserPlus,
-  FiX,
-} from "react-icons/fi";
+import { FiCheck, FiEdit2, FiFolder, FiTrash2, FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import logoAddCollab from "../../assets/images/btn-addCollab.webp";
-import { useTheme } from "../../hooks/useTheme";
 import type { Collaborator } from "../../services/collaboratorService";
 import type { Project } from "../../services/projectService";
 import { getAvatarColor, getInitials } from "../../utils/avatar";
@@ -30,7 +22,6 @@ export default function ProjectCard({
   onDelete,
   onInvite,
 }: Props) {
-  const { isDsy } = useTheme();
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(project.title);
   const [editDescription, setEditDescription] = useState(project.description);
@@ -167,11 +158,7 @@ export default function ProjectCard({
                   onClick={() => onInvite(project.id)}
                   title="Inviter un collaborateur"
                 >
-                  {isDsy ? (
-                    <FiUserPlus className="add-collab-icon-dsy" />
-                  ) : (
-                    <img src={logoAddCollab} alt="Inviter un collaborateur" />
-                  )}
+                  <img src={logoAddCollab} alt="Inviter un collaborateur" />
                 </button>
               )}
             </div>

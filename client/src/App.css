@@ -221,7 +221,9 @@ img {
 
 /* Tooltips nav header : s'affichent sous les icônes */
 .nav-icon-link[data-tooltip]::after,
-.nav-logout[data-tooltip]::after {
+.nav-logout[data-tooltip]::after,
+.nav-theme-toggle[data-tooltip]::after,
+.add-task-toggle[data-tooltip]::after {
   bottom: auto;
   top: calc(100% + 8px);
 }

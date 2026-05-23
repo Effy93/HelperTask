@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 
 import type { ITask, TaskStatus } from "../../../server/src/types/ITask";
@@ -8,6 +8,7 @@ import BoardHeader from "../components/board/BoardHeader";
 import BoardSidebar from "../components/board/BoardSidebar";
 import TaskDrawer from "../components/board/TaskDrawer";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import { useCollaborators } from "../hooks/useCollaborators";
 import { useDragAndDrop } from "../hooks/useDragAndDrop";
 import { useTasks } from "../hooks/useTasks";
@@ -20,11 +21,13 @@ type Project = { id_project: number; title: string; description: string };
 
 export default function Board() {
   const { user, loading } = useAuth();
+  const { showToast } = useToast();
   const params = useParams();
   const projectId = Number(params.id);
 
   const [project, setProject] = useState<Project | null>(null);
   const [showInviteModal, setShowInviteModal] = useState(false);
+  const statusChangePending = useRef(false);
 
   const [showTaskPanel, setShowTaskPanel] = useState(false);
   const [editingTask, setEditingTask] = useState<ITask | null>(null);
@@ -43,7 +46,7 @@ export default function Board() {
     update: updateTaskHook,
     remove: removeTask,
     reorder,
-  } = useTasks(projectId);
+  } = useTasks(projectId, (msg) => showToast(msg, "error"));
 
   const { collaborators, refresh: refreshCollaborators } =
     useCollaborators(projectId);
@@ -140,39 +143,42 @@ export default function Board() {
   const handleUpdateTask = async (taskId: number, updates: Partial<ITask>) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
-    await updateTask(taskId, {
-      title: updates.title ?? task.title,
-      content: updates.content ?? task.content,
-      status: updates.status ?? task.status,
-      position: updates.position ?? task.position,
-      project_id: task.project_id,
-    });
-    await refreshTasks();
+    try {
+      await updateTask(taskId, {
+        title: updates.title ?? task.title,
+        content: updates.content ?? task.content,
+        status: updates.status ?? task.status,
+        position: updates.position ?? task.position,
+        project_id: task.project_id,
+      });
+      await refreshTasks();
+    } catch {
+      showToast("La mise à jour a échoué, veuillez réessayer.", "error");
+    }
   };
 
   const handleChangeTaskStatus = async (taskId: number, status: TaskStatus) => {
+    if (statusChangePending.current) return;
     const task = tasks.find((t) => t.id === taskId);
     if (!task || task.status === status) return;
 
-    const newPosition = buildOrderedColumn(status).length;
-    await updateTask(taskId, {
-      title: task.title,
-      content: task.content,
-      status,
-      position: newPosition,
-      project_id: task.project_id,
-    });
+    statusChangePending.current = true;
+    try {
+      const newPosition = buildOrderedColumn(status).length;
 
-    const sourceUpdates = buildOrderedColumn(task.status)
-      .filter((t) => t.id !== taskId)
-      .map((t, i) => ({ id: t.id, status: t.status, position: i }));
-    const destUpdates = [
-      ...buildOrderedColumn(status),
-      { ...task, status, position: newPosition },
-    ].map((t, i) => ({ id: t.id, status, position: i }));
-    await reorder([...sourceUpdates, ...destUpdates]);
+      const sourceUpdates = buildOrderedColumn(task.status)
+        .filter((t) => t.id !== taskId)
+        .map((t, i) => ({ id: t.id, status: t.status, position: i }));
 
-    await refreshTasks();
+      const destUpdates = [
+        ...buildOrderedColumn(status),
+        { ...task, status, position: newPosition },
+      ].map((t, i) => ({ id: t.id, status, position: i }));
+
+      await reorder([...sourceUpdates, ...destUpdates]);
+    } finally {
+      statusChangePending.current = false;
+    }
   };
 
   const isOwner =
