@@ -6,8 +6,10 @@
   --color-primary: #fc7753;
   --color-primary-hover: #734b29;
 
-  --color-accent: #fba875; /* orange accent */
+  --color-accent: #fba875;
   --color-accent-soft: #ffd8bd;
+
+  --color-link: var(--color-primary);
 
   --color-success: #368d28; /* bouton valider */
   --color-success-hover: #2c7421;
@@ -46,7 +48,7 @@
   /* Formulaires               */
   /* ========================= */
 
-  --label-float-bg: rgb(250, 230, 220);
+  --label-float-bg: rgb(246, 214, 197);
 
   /* ========================= */
   /* Surfaces (aliases)        */
@@ -64,7 +66,7 @@
   /* Typographie               */
   /* ========================= */
 
-  --font-titre: "Italiana", serif;
+  --font-titre: "Cormorant Garamond", serif;
   --font-texte: "Inter", sans-serif;
 
   /* ========================= */

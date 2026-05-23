@@ -21,7 +21,7 @@ const LINKS = [
   },
   {
     label: "Portfolio",
-    href: "#",
+    href: "https://effy93.github.io/LumenLab/",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm-1 17.93V18a1 1 0 0 0-1-1H8A8.001 8.001 0 0 1 4.07 13H5a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2H4.07A8.001 8.001 0 0 1 11 4.07V5a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-.07a8.001 8.001 0 0 1 5.93 5.14V9a2 2 0 0 0-2 2h-1a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h.27A8.003 8.003 0 0 1 13 19.93V19a1 1 0 0 0-1-1h-.07c.04-.33.07-.66.07-1z" />

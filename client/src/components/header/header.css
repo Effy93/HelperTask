@@ -27,11 +27,6 @@
   font-size: 0.95rem;
 }
 
-.header--small .nav-icon-link,
-.header--small .nav-logout {
-  transform: scale(0.72);
-}
-
 .header::after {
   content: "";
   position: absolute;
@@ -52,9 +47,14 @@
 /* LOGO                      */
 /* ========================= */
 h1 {
-  font-size: 1.1rem;
-  color: var(--color-primary);
+  font-size: 1.5rem;
+  color: var(--color-text-main);
   transition: font-size 0.3s ease;
+}
+
+.logo-accent {
+  color: var(--color-primary);
+  font-style: italic;
 }
 
 .logo span {
@@ -97,29 +97,55 @@ nav ul li .nav-link {
   position: relative;
   display: inline-block;
   text-decoration: none;
-  color: var(--color-main);
+  color: var(--color-text-main);
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   padding: 4px 0;
   cursor: pointer;
   transition: transform 0.3s ease, color 0.3s ease;
   outline: none;
 }
 
-/* Icônes nav (profile + logout) */
-li:has(.nav-icon-link),
-li:has(.nav-logout) {
-  margin-left: -1.6rem;
-}
-
 .nav-icon-link,
 .nav-logout {
   all: unset;
+  font-family: var(--font-texte);
   position: relative;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  transition: transform 0.3s ease, filter 0.3s ease;
+  gap: 0.4rem;
+  color: var(--color-text-main);
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 0;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Mobile : icône seule */
+.nav-label {
+  display: none;
+}
+.nav-icon-mobile {
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-icon-link:hover,
+.nav-logout:hover {
+  color: var(--color-link);
+  transform: translateY(-4px) scale(1.1);
+}
+
+.nav-icon-link:focus-visible,
+.nav-logout:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 .nav-icon-dsy {
@@ -260,12 +286,6 @@ nav ul li .nav-link:focus-visible {
   transform: scale(0.72);
 }
 
-/* DSY : annule la marge négative prévue pour le whitespace des images */
-[data-theme="dsy"] li:has(.nav-icon-link),
-[data-theme="dsy"] li:has(.nav-logout) {
-  margin-left: 0;
-}
-
 /* DSY : header adapté */
 [data-theme="dsy"] .header {
   border-bottom: 1px solid rgba(74, 134, 168, 0.3);
@@ -303,15 +323,25 @@ nav ul li .nav-link:focus-visible {
   }
 
   h1 {
-    font-size: unset;
+    font-size: 1.8rem;
   }
 
   nav ul {
     gap: 2rem;
   }
 
-  nav ul li .nav-link {
-    font-size: unset;
+  nav ul li .nav-link,
+  .nav-icon-link,
+  .nav-logout {
+    font-size: 0.75rem;
     padding: 6px 0;
+  }
+
+  /* Desktop : texte, pas icône */
+  .nav-label {
+    display: inline;
+  }
+  .nav-icon-mobile {
+    display: none;
   }
 }

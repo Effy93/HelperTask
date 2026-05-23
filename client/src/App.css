@@ -16,8 +16,8 @@ body {
   line-height: 1.5;
   color: var(--color-text-main);
   min-height: 100vh;
-  background-color: #f5e3d8;
-  background-image: url(./assets/images/bg.webp);
+  background-color: #ede0ce;
+  background-image: url(./assets/images/bg-taskhelper.png);
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -28,7 +28,7 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(255, 248, 244, 0.22);
+  background: rgba(235, 220, 195, 0.15);
   pointer-events: none;
   z-index: 0;
 }

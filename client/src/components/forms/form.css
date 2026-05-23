@@ -12,13 +12,13 @@
 .form-card {
   width: 100%;
   max-width: 440px;
-  background: var(--glass-l1-bg);
-  backdrop-filter: var(--glass-l1-blur);
-  -webkit-backdrop-filter: var(--glass-l1-blur);
-  border: 1px solid rgba(252, 119, 83, 0.28);
+  background: rgba(255, 249, 245, 0.35);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 24px;
   padding: 2.5rem 2rem;
-  box-shadow: 0 8px 32px rgba(252, 119, 83, 0.12), var(--glass-l1-shadow);
+  box-shadow: var(--glass-l1-shadow);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -45,6 +45,7 @@ form {
 .input-group {
   margin: 20px 0;
   position: relative;
+  width: 100%;
 }
 
 .input-group label {
@@ -62,7 +63,7 @@ form {
 }
 
 .input-group input {
-  width: 360px;
+  width: 100%;
   height: 60px;
   font-size: 16px;
   padding: 0 15px;
@@ -70,7 +71,6 @@ form {
   border-radius: 12px;
   outline: none;
   color: var(--color-text);
-  /* fond transparent pour laisser voir la carte derrière */
   background: transparent;
   transition: border-color 0.2s ease;
 }
